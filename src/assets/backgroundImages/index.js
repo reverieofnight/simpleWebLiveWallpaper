@@ -1,18 +1,7 @@
 export default [
     new URL('@/assets/backgroundImages/梵高-星月夜.jpg',import.meta.url).href,
-    new URL('@/assets/backgroundImages/CR12su_20240212_123858535.jpg',import.meta.url).href,
-    new URL('@/assets/backgroundImages/IMG_20220814_152119.jpg',import.meta.url).href,
-    new URL('@/assets/backgroundImages/IMG_20220906_212611.jpg',import.meta.url).href,
-    new URL('@/assets/backgroundImages/IMG_20220924_080728.jpg',import.meta.url).href,
-    new URL('@/assets/backgroundImages/IMG_20221004_185915.jpg',import.meta.url).href,
     new URL('@/assets/backgroundImages/IMG_20221006_144106.jpg',import.meta.url).href,
-    new URL('@/assets/backgroundImages/IMG_20221006_152239.jpg',import.meta.url).href,
-    new URL('@/assets/backgroundImages/IMG_20221006_162813.jpg',import.meta.url).href,
-    new URL('@/assets/backgroundImages/IMG_20221006_195048.jpg',import.meta.url).href,
-    new URL('@/assets/backgroundImages/IMG_20221006_214438.jpg',import.meta.url).href,
-    new URL('@/assets/backgroundImages/IMG_20221009_183501.jpg',import.meta.url).href,
     new URL('@/assets/backgroundImages/IMG_20221010_171539.jpg',import.meta.url).href,
     new URL('@/assets/backgroundImages/IMG_20221105_141158.jpg',import.meta.url).href,
-    new URL('@/assets/backgroundImages/IMG_20221203_144747.jpg',import.meta.url).href,
     new URL('@/assets/backgroundImages/IMG_20230206_005502.jpg',import.meta.url).href,
 ]
