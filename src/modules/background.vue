@@ -12,7 +12,8 @@
 import { useStore } from '@/pinia';
 import { ref, watch, nextTick, computed, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
-import picsList from "@/assets/backgroundImages";
+// import picsList from "@/assets/backgroundImages";
+const picsList = [];
 const store = useStore();
 const { bgSet } = storeToRefs(store);
 const backgroundType = computed(() => {
@@ -73,6 +74,10 @@ onMounted(() => {
 let initDelayTimer = '';
 //初始化幻灯片
 function initSlide() {
+	if(!fileDirectory.value){
+		console.log('未检测到文件目录！');
+		return;
+	}
 	if(initDelayTimer){
 		clearTimeout(initDelayTimer)
 	}
@@ -101,7 +106,9 @@ function switchBackgroundImage() {
 	} else if (process.env.NODE_ENV === 'development') {
 		let index = Math.floor(picsList.length * Math.random());
 		let filePath = picsList[index];
-		handler('', filePath);
+		if(filePath){
+			handler('', filePath);
+		}
 	}
 
 	function handler(proertyName, filePath) {

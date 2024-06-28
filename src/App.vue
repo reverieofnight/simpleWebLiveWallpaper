@@ -66,6 +66,8 @@ onMounted(() => {
     store.$state.bgSet.backgroundType = 'slide';
     //持续时间为6s
     store.$state.bgSet.duration = 0.2 * 1000 * 60;
+    //文件目录
+    store.$state.bgSet.fileDirectory = 'fileDirectory';
     backgroundModuleRef.value.init();
   }
  
