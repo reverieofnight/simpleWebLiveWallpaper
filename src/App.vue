@@ -1,15 +1,18 @@
 <template>
   <div class="view-container">
     <backgroundModule ref="backgroundModuleRef" />
+    <clockModule ref="clockModuleRef" />
   </div>
 </template>
 
 <script setup>
 import backgroundModule from '@/modules/background.vue'
-import { onBeforeMount, onMounted,ref } from 'vue';
+import clockModule from '@/modules/clock.vue';
+import { onMounted,ref } from 'vue';
 import { useStore } from "@/pinia";
 
 const backgroundModuleRef = ref();
+const clockModuleRef = ref();
 const store = useStore();
 onMounted(() => {
   console.log('store',store);
@@ -31,17 +34,15 @@ onMounted(() => {
             backgroundModuleRef.value.destroy();
           }
         }
-        //背景类型
-        if(properties.backgroundType){
-          store.$state.bgSet.backgroundType = properties.backgroundType.value;
-        }
+        //背景类型，文件目录
+        Object.keys(properties).forEach((key) => {
+          if(['backgroundType','fileDirectory'].includes(key)){
+            store.$state.bgSet[key] = properties[key].value;
+          }
+        })
         //文件路径
         if(properties.filePath){
           store.$state.bgSet.filePath = 'file:///' + properties.filePath.value;
-        }
-        //文件目录
-        if(properties.fileDirectory){
-          store.$state.bgSet.fileDirectory = properties.fileDirectory.value;
         }
         //持续时间
         if(properties.picDuration){
@@ -57,6 +58,16 @@ onMounted(() => {
           }
           
         }
+        //显示时钟
+        if(properties.showClock){
+          let showClock = properties.showClock.value;
+          store.$state.clockSet.showClock = showClock;
+          if(showClock === true){
+            clockModuleRef.value.init();
+          } else {
+            clockModuleRef.value.destroy();
+          }
+        }
       },
     }
   } else if( process.env.NODE_ENV === 'development'){
@@ -69,15 +80,30 @@ onMounted(() => {
     //文件目录
     store.$state.bgSet.fileDirectory = 'fileDirectory';
     backgroundModuleRef.value.init();
+    //显示时钟
+    store.$state.clockSet.showClock = true;
+    clockModuleRef.value.init();
   }
  
 })
 </script>
 
-<style>
+<style lang="less">
+@font-face {
+  font-family: "digital";
+  src: url("@/assets/fonts/digital.ttf");
+}
 .view-container{
   width: 100vw;
-  height:100vh; 
+  height:100vh;
+  .background-layer{
+    position: absolute;
+    z-index: 0;
+  }
+  .clock-layer{
+    position: absolute;
+    z-index: 1;
+  }
 }
 *{
   margin:0;

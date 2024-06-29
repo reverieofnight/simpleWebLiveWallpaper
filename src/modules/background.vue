@@ -12,8 +12,7 @@
 import { useStore } from '@/pinia';
 import { ref, watch, nextTick, computed, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
-// import picsList from "@/assets/backgroundImages";
-const picsList = [];
+import picsList from "@/assets";
 const store = useStore();
 const { bgSet } = storeToRefs(store);
 const backgroundType = computed(() => {
@@ -106,6 +105,7 @@ function switchBackgroundImage() {
 	} else if (process.env.NODE_ENV === 'development') {
 		let index = Math.floor(picsList.length * Math.random());
 		let filePath = picsList[index];
+		console.log('filePath',filePath);
 		if(filePath){
 			handler('', filePath);
 		}
@@ -144,6 +144,10 @@ defineExpose({
 </script>
 
 <style lang="less" scoped>
+.background-layer{
+	width: 100%;
+	height:100%;
+}
 .static,
 .slide,
 .before-image,
