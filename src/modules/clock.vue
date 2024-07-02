@@ -5,12 +5,12 @@
         <span class="bit">{{ time.hour.slice(0,1) }}</span>
         <span class="bit">{{ time.hour.slice(1,2) }}</span>
       </div>
-      <div class="dot">:</div>
+      <div class="dot" :class="dotActive && 'active'">:</div>
       <div class="minute">
         <span class="bit">{{ time.minute.slice(0,1) }}</span>
         <span class="bit">{{ time.minute.slice(1,2) }}</span>
       </div>
-      <div class="dot">:</div>
+      <div class="dot" :class="dotActive && 'active'">:</div>
       <div class="second">
         <span class="bit">{{ time.second.slice(0,1) }}</span>
         <span class="bit">{{ time.second.slice(1,2) }}</span>
@@ -44,6 +44,8 @@ const time = reactive({
 let timer = '';
 //是否显示时钟层
 const showLayer = ref(false);
+//点激活
+const dotActive = ref(false);
 function init(){
   console.log('初始化时钟层');
   showLayer.value = true;
@@ -58,6 +60,9 @@ function init(){
     time.weekday = translate.weekday.en[dayjs().day()];
     time.hour = nowTime.slice(11,13);
     time.minute = nowTime.slice(14,16);
+    if(time.second !== nowTime.slice(17.19)){
+      dotActive.value = !dotActive.value;
+    }
     time.second = nowTime.slice(17,19);
   },100)
 }
@@ -108,6 +113,11 @@ defineExpose({
     }
     .dot{
       width:75px;
+      opacity: 0.4;
+      transform: translateY(-5%);
+    }
+    .dot.active{
+      opacity: 1;
     }
   }
   .date{

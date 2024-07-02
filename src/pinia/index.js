@@ -10,6 +10,9 @@ const store = {
             },
             clockSet:{
                 showClock:false,
+            },
+            weatherSet:{
+                showWeather:false,
             }
         }
     },

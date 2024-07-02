@@ -1,6 +1,7 @@
 <template>
   <div class="view-container">
     <backgroundModule ref="backgroundModuleRef" />
+    <weatherModule ref="weatherModuleRef" />
     <clockModule ref="clockModuleRef" />
   </div>
 </template>
@@ -8,11 +9,13 @@
 <script setup>
 import backgroundModule from '@/modules/background.vue'
 import clockModule from '@/modules/clock.vue';
+import weatherModule from '@/modules/weather.vue';
 import { onMounted,ref } from 'vue';
 import { useStore } from "@/pinia";
 
 const backgroundModuleRef = ref();
 const clockModuleRef = ref();
+const weatherModuleRef = ref();
 const store = useStore();
 onMounted(() => {
   console.log('store',store);
@@ -68,6 +71,16 @@ onMounted(() => {
             clockModuleRef.value.destroy();
           }
         }
+        //显示天气
+        if(properties.showWeather){
+          let showWeather = properties.showWeather.value;
+          store.$state.weatherSet.showWeather = showWeather;
+          if(showWeather === true){
+            weatherModuleRef.value.init();
+          } else {
+            weatherModuleRef.value.destroy();
+          }
+        }
       },
     }
   } else if( process.env.NODE_ENV === 'development'){
@@ -83,9 +96,12 @@ onMounted(() => {
     //显示时钟
     store.$state.clockSet.showClock = true;
     clockModuleRef.value.init();
+    //显示天气
+    weatherModuleRef.value.init();
   }
  
 })
+
 </script>
 
 <style lang="less">
@@ -100,9 +116,13 @@ onMounted(() => {
     position: absolute;
     z-index: 0;
   }
+  .weather-layer{
+    position: absolute;
+    z-index:1
+  }
   .clock-layer{
     position: absolute;
-    z-index: 1;
+    z-index: 2;
   }
 }
 *{
