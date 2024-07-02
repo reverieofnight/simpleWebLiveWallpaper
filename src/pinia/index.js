@@ -13,6 +13,7 @@ const store = {
             },
             weatherSet:{
                 showWeather:false,
+                cityCode:'',
             }
         }
     },

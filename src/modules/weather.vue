@@ -18,9 +18,16 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, computed } from 'vue';
 import axios from 'axios';
 import { weatherToIcon, weatherMerge } from './weatherToIcon';
+import { storeToRefs } from 'pinia';
+import { useStore } from '@/pinia';
+const store = useStore();
+const { weatherSet } = storeToRefs(store);
+const cityCode = computed(() => {
+  return weatherSet.value.cityCode
+})
 let lives = reactive({
   province:'',
   city:'',
@@ -38,6 +45,7 @@ let timer = '';
 const refreshInterval = 10 * 60 * 1000;
 let rainTimer = '';
 function init(){
+  console.log('天气层初始化');
   getWeather();
   if(timer){
     clearInterval(timer);
@@ -47,11 +55,12 @@ function init(){
   },refreshInterval)
 }
 function getWeather(){
-  let cityCode = '320281';//江阴市
+  // let city = '320281';//江阴市
+  let city = cityCode.value;
   let apiKey = 'c7fee6c6ae63763b4d8529c9a8589c83';
   let data = {
     key:apiKey,
-    city:cityCode,
+    city:city,
     extensions:'base'
   }
   axios({

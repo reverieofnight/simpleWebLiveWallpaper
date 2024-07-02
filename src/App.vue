@@ -24,6 +24,8 @@ onMounted(() => {
      //监听用户属性改变
      //持续时间改变防抖
      let picDurationTimer = '';
+     //城市编码输入防抖
+     let cityCodeTimer = '';
     window.wallpaperPropertyListener = {
       applyUserProperties: function (properties) {
         console.log('用户属性改变', properties);
@@ -81,6 +83,22 @@ onMounted(() => {
             weatherModuleRef.value.destroy();
           }
         }
+        if(properties.cityCode){
+          if(properties.cityCode.value.length < 6){
+            return;
+          }
+          if(!store.$state.weatherSet.cityCode){
+            store.$state.weatherSet.cityCode = properties.cityCode.value;
+          } else {
+            if(cityCodeTimer){
+              clearTimeout(cityCodeTimer);
+            }
+            cityCodeTimer = setTimeout(() => {
+              store.$state.weatherSet.cityCode = properties.cityCode.value;
+              weatherModuleRef.value.init();
+            }, 1000);
+          }
+        }
       },
     }
   } else if( process.env.NODE_ENV === 'development'){
@@ -97,6 +115,7 @@ onMounted(() => {
     store.$state.clockSet.showClock = true;
     clockModuleRef.value.init();
     //显示天气
+    store.$state.weatherSet.cityCode = '320281';
     weatherModuleRef.value.init();
   }
  
