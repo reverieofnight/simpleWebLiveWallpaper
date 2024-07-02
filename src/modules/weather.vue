@@ -8,7 +8,10 @@
         </div>
         <div class="right">
           <div class="temperature">{{ lives.temperature }}℃</div>
-          <div class="humidity">{{ lives.humidity }}%</div>
+          <div class="humidity">
+            <svg-icon :name="calcComfort(lives.humidity)" width="30" height="30"></svg-icon>
+            <span>{{ lives.humidity }}%</span>
+           </div>
         </div>
       </div>
       <div class="city">{{ lives.city }}</div>
@@ -23,6 +26,7 @@ import axios from 'axios';
 import { weatherToIcon, weatherMerge } from './weatherToIcon';
 import { storeToRefs } from 'pinia';
 import { useStore } from '@/pinia';
+import { nextTick } from 'process';
 const store = useStore();
 const { weatherSet } = storeToRefs(store);
 const cityCode = computed(() => {
@@ -54,39 +58,68 @@ function init(){
     getWeather();
   },refreshInterval)
 }
+function waitCityCode(){
+  return new Promise((resolve, reject) => {
+    if(!cityCode.value){
+      let timer = setInterval(() => {
+        if(cityCode.value){
+          clearInterval(timer);
+          resolve();
+        }
+      },100)
+      setTimeout(() => {
+        if(!cityCode.value){
+          clearInterval(timer);
+          reject('未获得城市编码!')
+        }
+      }, 5000);
+    } else {
+      resolve();
+    }
+  })
+}
 function getWeather(){
   // let city = '320281';//江阴市
-  let city = cityCode.value;
-  let apiKey = 'c7fee6c6ae63763b4d8529c9a8589c83';
-  let data = {
-    key:apiKey,
-    city:city,
-    extensions:'base'
-  }
-  axios({
-    url:'https://restapi.amap.com/v3/weather/weatherInfo',
-    method:'get',
-    params:data
-  }).then((res) => {
-    if(res.status === 200 && res.data && res.data.lives && res.data.lives[0]){
-      Object.assign(lives,res.data.lives[0])
-      console.log('实时天气',lives);
-      if(lives.weather){
-        let weather = weatherMerge(lives.weather);
-        if(['雨','雨夹雪'].includes(weather)){
-          //开启下雨效果
-          initRain();
-        } else {
-          if(rainTimer){
-            stopRain();
+  waitCityCode().then(() => {
+    let city = cityCode.value;
+    let apiKey = 'c7fee6c6ae63763b4d8529c9a8589c83';
+    let data = {
+      key:apiKey,
+      city:city,
+      extensions:'base'
+    }
+    axios({
+      url:'https://restapi.amap.com/v3/weather/weatherInfo',
+      method:'get',
+      params:data
+    }).then((res) => {
+      if(res.status === 200 && res.data && res.data.lives && res.data.lives[0]){
+        Object.assign(lives,res.data.lives[0])
+        console.log('实时天气',lives);
+        if(lives.weather){
+          let weather = weatherMerge(lives.weather);
+          if(['雨','雨夹雪'].includes(weather)){
+            //开启下雨效果
+            initRain();
+          } else {
+            if(rainTimer){
+              stopRain();
+            }
           }
         }
       }
-    }
+    })
+    .catch((err) => {
+      console.log('err',err);
+    })
   })
-  .catch((err) => {
-    console.log('err',err);
-  })
+}
+function calcComfort(humidity){
+  if(humidity >= 40 && humidity <= 70){
+    return 'smile'
+  } else {
+    return 'cry'
+  }
 }
 //下雨效果实现
 let rainCanvas = '';
@@ -225,11 +258,20 @@ defineExpose({
         .temperature{
           font-size: 40px;
         }
+        .humidity{
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-evenly;
+        }
       }
     }
     .city{
       text-align: center;
       font-size: 30px;
+    }
+    svg{
+      filter: drop-shadow(0 0 3px rgba(0,0,0,0.4));
     }
   }
   #rain-canvas{
