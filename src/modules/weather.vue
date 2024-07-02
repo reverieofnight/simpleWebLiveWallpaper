@@ -106,7 +106,7 @@ function initRain(){
 }
 function stopRain(){
   if(rainTimer){
-    clearInterval(genRain);
+    clearInterval(rainTimer);
   }
 }
 function genRain(){
