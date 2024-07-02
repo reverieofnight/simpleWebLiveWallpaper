@@ -154,6 +154,10 @@ function destroy(){
   if(timer){
     clearInterval(timer);
   }
+  //清除下雨定时器
+  if(rainTimer){
+    clearInterval(rainTimer)
+  }
   //隐藏天气层
   if(lives.adcode){
     lives.adcode = '';
