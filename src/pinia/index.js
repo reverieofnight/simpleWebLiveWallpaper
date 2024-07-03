@@ -14,6 +14,7 @@ const store = {
             weatherSet:{
                 showWeather:false,
                 cityCode:'',
+                apiKey:'',
             },
             fpsLimit:'',
         }

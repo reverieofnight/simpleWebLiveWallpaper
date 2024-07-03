@@ -27,6 +27,7 @@ import { weatherToIcon, weatherMerge } from './weatherToIcon';
 import { useStore } from '@/pinia';
 const store = useStore();
 const cityCode = computed(() => store.weatherSet.cityCode)
+const apiKey = computed(() => store.weatherSet.apiKey)
 let lives = reactive({
   province:'',
   city:'',
@@ -43,15 +44,22 @@ let lives = reactive({
 let timer = '';
 const refreshInterval = 10 * 60 * 1000;
 let rainTimer = '';
+//初始化防抖定时器
+let initTimer = '';
 function init(){
-  console.log('天气层初始化');
-  getWeather();
-  if(timer){
-    clearInterval(timer);
+  if(initTimer){
+    clearTimeout(initTimer);
   }
-  timer = setInterval(() => {
+  initTimer = setTimeout(() => {
+    console.log('初始化天气层');
     getWeather();
-  },refreshInterval)
+    if(timer){
+      clearInterval(timer);
+    }
+    timer = setInterval(() => {
+      getWeather();
+    },refreshInterval)
+  }, 100);
 }
 function waitCityCode(){
   return new Promise((resolve, reject) => {
@@ -77,9 +85,9 @@ function getWeather(){
   // let city = '320281';//江阴市
   waitCityCode().then(() => {
     let city = cityCode.value;
-    let apiKey = 'c7fee6c6ae63763b4d8529c9a8589c83';
+    let key = apiKey.value;
     let data = {
-      key:apiKey,
+      key:key,
       city:city,
       extensions:'base'
     }

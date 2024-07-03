@@ -26,6 +26,8 @@ onMounted(() => {
      let picDurationTimer = '';
      //城市编码输入防抖
      let cityCodeTimer = '';
+     //apiKey输入防抖
+     let apiKeyTimer = '';
     window.wallpaperPropertyListener = {
       applyUserProperties: function (properties) {
         console.log('用户属性改变', properties);
@@ -89,12 +91,27 @@ onMounted(() => {
           }
           if(!store.weatherSet.cityCode){
             store.weatherSet.cityCode = properties.cityCode.value;
+            weatherModuleRef.value.init();
           } else {
             if(cityCodeTimer){
               clearTimeout(cityCodeTimer);
             }
             cityCodeTimer = setTimeout(() => {
               store.weatherSet.cityCode = properties.cityCode.value;
+              weatherModuleRef.value.init();
+            }, 1000);
+          }
+        }
+        if(properties.apiKey){
+          if(!store.weatherSet.apiKey){
+            store.weatherSet.apiKey = properties.apiKey.value;
+            weatherModuleRef.value.init();
+          } else {
+            if(apiKeyTimer){
+              clearTimeout(apiKeyTimer);
+            }
+            apiKeyTimer = setTimeout(() => {
+              store.weatherSet.apiKey = properties.apiKey.value;
               weatherModuleRef.value.init();
             }, 1000);
           }
@@ -122,6 +139,8 @@ onMounted(() => {
     clockModuleRef.value.init();
     //显示天气
     store.weatherSet.cityCode = '110000';//北京市
+    //apiKey
+    store.weatherSet.apiKey = 'c7fee6c6ae63763b4d8529c9a8589c83';
     weatherModuleRef.value.init();
     //设置fps
     store.fpsLimit = 60;
