@@ -3,7 +3,7 @@ const store = {
     state:() => {
         return {
             bgSet:{
-                showBackground:false,
+                showBackground:'',
                 backgroundType:'',
                 filePath:'',
                 duration:'',
@@ -14,7 +14,8 @@ const store = {
             weatherSet:{
                 showWeather:false,
                 cityCode:'',
-            }
+            },
+            fpsLimit:'',
         }
     },
     actions:{

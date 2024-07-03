@@ -11,23 +11,14 @@
 <script setup>
 import { useStore } from '@/pinia';
 import { ref, watch, nextTick, computed, onMounted } from 'vue';
-import { storeToRefs } from 'pinia';
 import picsList from "@/assets";
 const store = useStore();
-const { bgSet } = storeToRefs(store);
-const backgroundType = computed(() => {
-	return bgSet.value.backgroundType
-})
-const filePath = computed(() => {
-	return bgSet.value.filePath
-})
-const showBackground = computed(() => {
-	return bgSet.value.showBackground
-})
+const backgroundType = computed(() => store.bgSet.backgroundType)
+const filePath = computed(() => store.bgSet.filePath)
+const showBackground = computed(() => store.bgSet.showBackground)
 
 function init() {
 	console.log('初始化背景层');
-	console.log('bgSet', bgSet);
 	if(backgroundType.value === 'slide'){
 		initSlide();
 	}
@@ -38,16 +29,10 @@ function destroy() {
 }
 // 幻灯片代码部分
 let timer = '';
-const switchInterval = '5000';
 const beforeImageRef = ref();
 const currentImageRef = ref();
-const currentImageFilePath = ref('');
-const duration = computed(() => {
-	return bgSet.value.duration
-})
-const fileDirectory = computed(() => {
-	return bgSet.value.fileDirectory
-})
+const duration = computed(() => store.bgSet.duration)
+const fileDirectory = computed(() => store.bgSet.fileDirectory)
 onMounted(() => {
 	watch(backgroundType, (val) => {
 			console.log('背景类型改变', val);
@@ -110,15 +95,34 @@ function switchBackgroundImage() {
 			handler('', filePath);
 		}
 	}
-
+	
 	function handler(proertyName, filePath) {
 		beforeImageRef.value.style.backgroundImage = 'url(' + filePath + ')';
 		let opacity = 0;
 		requestAnimationFrame(picAppear);
+		//绘制动画过程
+		const fpsLimit = computed(() => store.fpsLimit)
+		let last = '';
+		let fpsThreshold = 0;
 		function picAppear(){
+			if(!last){
+				last = performance.now() / 1000;
+			} else {
+				let now = performance.now() / 1000;
+				let dt = Math.min(now - last,1);
+				last = now; 
+				if(fpsLimit.value > 0){
+					fpsThreshold += dt;
+					if(fpsThreshold < 1.0 / fpsLimit.value){
+						requestAnimationFrame(picAppear);
+						return;
+					}
+					fpsThreshold -= 1.0 / fpsLimit.value;
+				}
+			}
 			beforeImageRef.value.style.opacity = opacity;
 			if(opacity < 1){
-				opacity += 0.005;
+				opacity += 0.01 * (60 / fpsLimit.value);
 				requestAnimationFrame(picAppear)
 			} else {
 				opacity = 0;

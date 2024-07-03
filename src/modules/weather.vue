@@ -24,14 +24,9 @@
 import { onMounted, reactive, ref, computed } from 'vue';
 import axios from 'axios';
 import { weatherToIcon, weatherMerge } from './weatherToIcon';
-import { storeToRefs } from 'pinia';
 import { useStore } from '@/pinia';
-import { nextTick } from 'process';
 const store = useStore();
-const { weatherSet } = storeToRefs(store);
-const cityCode = computed(() => {
-  return weatherSet.value.cityCode
-})
+const cityCode = computed(() => store.weatherSet.cityCode)
 let lives = reactive({
   province:'',
   city:'',
@@ -125,6 +120,7 @@ function calcComfort(humidity){
 let rainCanvas = '';
 let ctx = '';
 const rainArr = [];
+const fpsLimit = computed(() => store.fpsLimit)
 onMounted(() => {
   rainCanvas = document.getElementById('rain-canvas');
   rainCanvas.width = window.innerWidth;
@@ -172,13 +168,30 @@ function genRain(){
     requestAnimationFrame(drawRain);
     // drawRain();
   }
+  let last = '';
+  let fpsThreshold = 0;
   //绘制雨滴将落的效果
   function drawRain(){
+    if(!last){
+      last = performance.now() / 1000;
+    } else {
+      let now = performance.now() / 1000;
+      let dt = Math.min(now - last,1);
+      last = now; 
+      if(fpsLimit.value > 0){
+        fpsThreshold += dt;
+        if(fpsThreshold < 1.0 / fpsLimit.value){
+          requestAnimationFrame(drawRain);
+          return;
+        }
+        fpsThreshold -= 1.0 / fpsLimit.value;
+      }
+    }
     ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
     rainArr.forEach((e,index) => {
       ctx.fillStyle = 'rgb(255,255,255,' + e.opacity + ')';
       ctx.fillRect(e.x,e.y,e.width,e.height);
-      e.y = e.y + e.speed;
+      e.y = e.y + e.speed * (60 / fpsLimit.value);
       if(e.y > window.innerHeight){
         rainArr.splice(index,1);
       }

@@ -32,7 +32,7 @@ onMounted(() => {
         //显示背景
         if(properties.showBackground){
           let showBackground = properties.showBackground.value;
-          store.$state.bgSet.showBackground = showBackground;
+          store.bgSet.showBackground = showBackground;
           if(showBackground === true){
             backgroundModuleRef.value.init();
           } else if(showBackground === false){
@@ -42,23 +42,23 @@ onMounted(() => {
         //背景类型，文件目录
         Object.keys(properties).forEach((key) => {
           if(['backgroundType','fileDirectory'].includes(key)){
-            store.$state.bgSet[key] = properties[key].value;
+            store.bgSet[key] = properties[key].value;
           }
         })
         //文件路径
         if(properties.filePath){
-          store.$state.bgSet.filePath = 'file:///' + properties.filePath.value;
+          store.bgSet.filePath = 'file:///' + properties.filePath.value;
         }
         //持续时间
         if(properties.picDuration){
-          if(!store.$state.bgSet.duration){
-            store.$state.bgSet.duration = properties.picDuration.value * 1000 * 60;
+          if(!store.bgSet.duration){
+            store.bgSet.duration = properties.picDuration.value * 1000 * 60;
           } else {
             if(picDurationTimer){
               clearTimeout(picDurationTimer);
             }
             picDurationTimer = setTimeout(() => {
-              store.$state.bgSet.duration = properties.picDuration.value * 1000 * 60;
+              store.bgSet.duration = properties.picDuration.value * 1000 * 60;
             }, 1000);
           }
           
@@ -66,7 +66,7 @@ onMounted(() => {
         //显示时钟
         if(properties.showClock){
           let showClock = properties.showClock.value;
-          store.$state.clockSet.showClock = showClock;
+          store.clockSet.showClock = showClock;
           if(showClock === true){
             clockModuleRef.value.init();
           } else {
@@ -76,7 +76,7 @@ onMounted(() => {
         //显示天气
         if(properties.showWeather){
           let showWeather = properties.showWeather.value;
-          store.$state.weatherSet.showWeather = showWeather;
+          store.weatherSet.showWeather = showWeather;
           if(showWeather === true){
             weatherModuleRef.value.init();
           } else {
@@ -87,38 +87,46 @@ onMounted(() => {
           if(properties.cityCode.value.length < 6){
             return;
           }
-          if(!store.$state.weatherSet.cityCode){
-            store.$state.weatherSet.cityCode = properties.cityCode.value;
+          if(!store.weatherSet.cityCode){
+            store.weatherSet.cityCode = properties.cityCode.value;
           } else {
             if(cityCodeTimer){
               clearTimeout(cityCodeTimer);
             }
             cityCodeTimer = setTimeout(() => {
-              store.$state.weatherSet.cityCode = properties.cityCode.value;
+              store.weatherSet.cityCode = properties.cityCode.value;
               weatherModuleRef.value.init();
             }, 1000);
           }
         }
       },
+      applyGeneralProperties:function(properties){
+        if(properties.fps){
+          store.fpsLimit = properties.fps;
+          console.log('帧数限制',store.fpsLimit);
+        }
+      }
     }
   } else if( process.env.NODE_ENV === 'development'){
     //显示背景层
-    store.$state.bgSet.showBackground = true;
+    store.bgSet.showBackground = true;
     //背景类型为幻灯片
-    store.$state.bgSet.backgroundType = 'slide';
+    store.bgSet.backgroundType = 'slide';
     //持续时间为6s
-    store.$state.bgSet.duration = 0.2 * 1000 * 60;
+    store.bgSet.duration = 0.1 * 1000 * 60;
     //文件目录
-    store.$state.bgSet.fileDirectory = 'fileDirectory';
+    store.bgSet.fileDirectory = 'fileDirectory';
     backgroundModuleRef.value.init();
     //显示时钟
-    store.$state.clockSet.showClock = true;
+    store.clockSet.showClock = true;
     clockModuleRef.value.init();
     //显示天气
-    store.$state.weatherSet.cityCode = '320281';
+    store.weatherSet.cityCode = '110000';//北京市
     weatherModuleRef.value.init();
+    //设置fps
+    store.fpsLimit = 60;
+    console.log('帧数限制',store.fpsLimit);
   }
- 
 })
 
 </script>
