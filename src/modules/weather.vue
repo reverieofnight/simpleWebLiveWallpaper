@@ -25,6 +25,7 @@ import { onMounted, reactive, ref, computed } from 'vue';
 import axios from 'axios';
 import { weatherToIcon, weatherMerge } from './weatherToIcon';
 import { useStore } from '@/pinia';
+import dayjs from 'dayjs';
 const store = useStore();
 const cityCode = computed(() => store.weatherSet.cityCode)
 const apiKey = computed(() => store.weatherSet.apiKey)
@@ -97,25 +98,45 @@ function getWeather(){
       params:data
     }).then((res) => {
       if(res.status === 200 && res.data && res.data.lives && res.data.lives[0]){
-        Object.assign(lives,res.data.lives[0])
-        console.log('实时天气',lives);
-        if(lives.weather){
-          let weather = weatherMerge(lives.weather);
-          if(['雨','雨夹雪'].includes(weather)){
-            //开启下雨效果
-            initRain();
-          } else {
-            if(rainTimer){
-              stopRain();
-            }
-          }
-        }
+        let data = res.data.lives[0];
+        setWeatherData(data);
+        localStorage.setItem('lives',JSON.stringify(data));
       }
     })
     .catch((err) => {
       console.log('err',err);
+      let tempLives = JSON.parse(localStorage.getItem('lives'))
+      console.log('tempLives',tempLives);
+      if(tempLives && tempLives.reporttime && tempLives.adcode === cityCode.value){
+        let now = dayjs().valueOf();
+        let old = dayjs(tempLives.reporttime).valueOf();
+        let dt = now - old;
+        if(dt <= 4 * 60 * 1000){
+          console.log('离线天气数据过时少于1小时');
+          setWeatherData(tempLives);
+        }
+      }
+    })
+    .finally(() => {
+      
     })
   })
+}
+//设置天气并且判断是否开启特效
+function setWeatherData(data){
+  Object.assign(lives,data)
+  console.log('实时天气',lives);
+  if(lives.weather){
+    let weather = weatherMerge(lives.weather);
+    if(['雨','雨夹雪'].includes(weather)){
+      //开启下雨效果
+      initRain();
+    } else {
+      if(rainTimer){
+        stopRain();
+      }
+    }
+  }
 }
 function calcComfort(humidity){
   if(humidity >= 40 && humidity <= 70){
