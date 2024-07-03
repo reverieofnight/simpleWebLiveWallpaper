@@ -27,5 +27,6 @@ export default defineConfig({
   build:{
     target:'modules',
     outDir:'C:/Program Files (x86)/Steam/steamapps/common/wallpaper_engine/projects/myprojects/simpleweblivewal/',
+    emptyOutDir: true, // 构建时清空该目录
   },
 })

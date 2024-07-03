@@ -1,0 +1,161 @@
+{
+	"contentrating" : "Everyone",
+	"description" : "天气apiKey申请\r\nhttps://lbs.amap.com/api/webservice/create-project-and-key",
+	"file" : "index.html",
+	"general" : 
+	{
+		"localization" : 
+		{
+			"en-us" : 
+			{
+				"ui_apiKey" : "api Key",
+				"ui_backgroundType" : "background Type",
+				"ui_cityCode" : "city Code",
+				"ui_fileDirectory" : "file Directory",
+				"ui_filePath" : "file Path",
+				"ui_picDuration" : "duration(min)",
+				"ui_showBackground" : "show Background",
+				"ui_showClock" : "show Clock",
+				"ui_showWeather" : "show Weather",
+				"ui_slide" : "slide",
+				"ui_static" : "static"
+			},
+			"zh-chs" : 
+			{
+				"ui_apiKey" : "天气查询Key(高德)",
+				"ui_backgroundType" : "背景类型",
+				"ui_cityCode" : "城市编码",
+				"ui_fileDirectory" : "文件夹路径",
+				"ui_filePath" : "文件路径",
+				"ui_picDuration" : "持续时间(分钟)",
+				"ui_showBackground" : "显示背景",
+				"ui_showClock" : "显示时钟",
+				"ui_showWeather" : "显示天气",
+				"ui_slide" : "图片幻灯片",
+				"ui_static" : "静态背景"
+			}
+		},
+		"properties" : 
+		{
+			"apiKey" : 
+			{
+				"condition" : "showWeather.value == true",
+				"index" : 8,
+				"order" : 108,
+				"text" : "ui_apiKey",
+				"type" : "textinput",
+				"value" : ""
+			},
+			"apihelp" : 
+			{
+				"condition" : "showWeather.value == true",
+				"index" : 9,
+				"order" : 109,
+				"text" : "<a href='https://steamcommunity.com/sharedfiles/filedetails/?id=3277017252' >没有apiKey?点击这里查看帮助</a>"
+			},
+			"backgroundType" : 
+			{
+				"condition" : "showBackground.value == true",
+				"index" : 1,
+				"options" : 
+				[
+					{
+						"label" : "ui_static",
+						"value" : "static"
+					},
+					{
+						"label" : "ui_slide",
+						"value" : "slide"
+					}
+				],
+				"order" : 101,
+				"text" : "ui_backgroundType",
+				"type" : "combo",
+				"value" : "static"
+			},
+			"cityCode" : 
+			{
+				"condition" : "showWeather.value == true",
+				"index" : 7,
+				"order" : 107,
+				"text" : "ui_cityCode",
+				"type" : "textinput",
+				"value" : "110000"
+			},
+			"fileDirectory" : 
+			{
+				"condition" : "showBackground.value == true && backgroundType.value == \"slide\"",
+				"index" : 3,
+				"mode" : "ondemand",
+				"order" : 103,
+				"text" : "ui_fileDirectory",
+				"type" : "directory",
+				"value" : ""
+			},
+			"filePath" : 
+			{
+				"condition" : "showBackground.value == true && backgroundType.value == \"static\"",
+				"index" : 2,
+				"order" : 102,
+				"text" : "ui_filePath",
+				"type" : "file",
+				"value" : ""
+			},
+			"picDuration" : 
+			{
+				"condition" : "showBackground.value == true && backgroundType.value == \"slide\"",
+				"fraction" : true,
+				"index" : 4,
+				"max" : 60,
+				"min" : 0.1,
+				"order" : 104,
+				"precision" : 2,
+				"step" : 0.1,
+				"text" : "ui_picDuration",
+				"type" : "slider",
+				"value" : 15
+			},
+			"schemecolor" : 
+			{
+				"order" : 0,
+				"text" : "ui_browse_properties_scheme_color",
+				"type" : "color",
+				"value" : "0 0 0"
+			},
+			"showBackground" : 
+			{
+				"index" : 0,
+				"order" : 100,
+				"text" : "ui_showBackground",
+				"type" : "bool",
+				"value" : true
+			},
+			"showClock" : 
+			{
+				"index" : 5,
+				"order" : 105,
+				"text" : "ui_showClock",
+				"type" : "bool",
+				"value" : true
+			},
+			"showWeather" : 
+			{
+				"index" : 6,
+				"order" : 106,
+				"text" : "ui_showWeather",
+				"type" : "bool",
+				"value" : true
+			}
+		}
+	},
+	"preview" : "preview.jpg",
+	"ratingsex" : "none",
+	"ratingviolence" : "none",
+	"tags" : [ "Music" ],
+	"title" : "simpleWebLiveWallpaper",
+	"type" : "Web",
+	"version" : 12,
+	"visibility" : "public",
+	"workshopid" : "3277017252",
+	"workshopurl" : "steam://url/CommunityFilePage/3277017252"
+}
