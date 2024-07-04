@@ -16,6 +16,9 @@ const store = {
                 cityCode:'',
                 apiKey:'',
             },
+            visSet:{
+                audioVisualizer:'',
+            },
             fpsLimit:'',
         }
     },

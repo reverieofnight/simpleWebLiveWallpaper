@@ -9,6 +9,7 @@
 			"en-us" : 
 			{
 				"ui_apiKey" : "api Key",
+				"ui_audioVisualizer" : "audio Visualizer",
 				"ui_backgroundType" : "background Type",
 				"ui_cityCode" : "city Code",
 				"ui_fileDirectory" : "file Directory",
@@ -23,6 +24,7 @@
 			"zh-chs" : 
 			{
 				"ui_apiKey" : "天气查询Key(高德)",
+				"ui_audioVisualizer" : "音频可视化",
 				"ui_backgroundType" : "背景类型",
 				"ui_cityCode" : "城市编码",
 				"ui_fileDirectory" : "文件夹路径",
@@ -52,6 +54,14 @@
 				"index" : 9,
 				"order" : 109,
 				"text" : "<a href='https://steamcommunity.com/sharedfiles/filedetails/?id=3277017252' >没有apiKey?点击这里查看帮助</a>"
+			},
+			"audioVisualizer" : 
+			{
+				"index" : 10,
+				"order" : 110,
+				"text" : "ui_audioVisualizer",
+				"type" : "bool",
+				"value" : true
 			},
 			"backgroundType" : 
 			{
@@ -146,7 +156,8 @@
 				"type" : "bool",
 				"value" : true
 			}
-		}
+		},
+		"supportsaudioprocessing" : true
 	},
 	"preview" : "preview.jpg",
 	"ratingsex" : "none",
@@ -154,7 +165,7 @@
 	"tags" : [ "Music" ],
 	"title" : "simpleWebLiveWallpaper",
 	"type" : "Web",
-	"version" : 12,
+	"version" : 13,
 	"visibility" : "public",
 	"workshopid" : "3277017252",
 	"workshopurl" : "steam://url/CommunityFilePage/3277017252"

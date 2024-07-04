@@ -3,19 +3,23 @@
     <backgroundModule ref="backgroundModuleRef" />
     <weatherModule ref="weatherModuleRef" />
     <clockModule ref="clockModuleRef" />
+    <audioVisualizerModule ref="audioVisualizerModuleRef" />
   </div>
 </template>
 
 <script setup>
-import backgroundModule from '@/modules/background.vue'
-import clockModule from '@/modules/clock.vue';
-import weatherModule from '@/modules/weather.vue';
+import backgroundModule from '@/modules/background/index.vue'
+import clockModule from '@/modules/clock/index.vue';
+import weatherModule from '@/modules/weather/index.vue';
+import audioVisualizerModule from '@/modules/audioVisualizer/index.vue';
 import { onMounted,ref } from 'vue';
 import { useStore } from "@/pinia";
+import emitter from '@/utils/mitt';
 
 const backgroundModuleRef = ref();
 const clockModuleRef = ref();
 const weatherModuleRef = ref();
+const audioVisualizerModuleRef = ref();
 const store = useStore();
 onMounted(() => {
   console.log('store',store);
@@ -116,6 +120,16 @@ onMounted(() => {
             }, 1000);
           }
         }
+        //音频可视化
+        if(properties.audioVisualizer){
+          let audioVisualizer = properties.audioVisualizer.value;
+          store.visSet.audioVisualizer = audioVisualizer;
+          if(audioVisualizer === true){
+            audioVisualizerModuleRef.value.init();
+          } else {
+            audioVisualizerModuleRef.value.destroy();
+          }
+        }
       },
       applyGeneralProperties:function(properties){
         if(properties.fps){
@@ -142,9 +156,15 @@ onMounted(() => {
     //apiKey
     store.weatherSet.apiKey = 'c7fee6c6ae63763b4d8529c9a8589c83';
     weatherModuleRef.value.init();
+    //音频可视化
+    store.visSet.audioVisualizer = true;
+    audioVisualizerModuleRef.value.init();
     //设置fps
     store.fpsLimit = 60;
     console.log('帧数限制',store.fpsLimit);
+  }
+  window.onresize = () => {
+    emitter.emit('windowResize');
   }
 })
 
@@ -162,13 +182,17 @@ onMounted(() => {
     position: absolute;
     z-index: 0;
   }
+  .audio-visualizer-layer{
+    position: absolute;
+    z-index:1;
+  }
   .weather-layer{
     position: absolute;
-    z-index:1
+    z-index:2;
   }
   .clock-layer{
     position: absolute;
-    z-index: 2;
+    z-index: 3;
   }
 }
 *{

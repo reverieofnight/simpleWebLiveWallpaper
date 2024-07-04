@@ -26,6 +26,7 @@ import axios from 'axios';
 import { weatherToIcon, weatherMerge } from './weatherToIcon';
 import { useStore } from '@/pinia';
 import dayjs from 'dayjs';
+import emitter from '@/utils/mitt';
 const store = useStore();
 const cityCode = computed(() => store.weatherSet.cityCode)
 const apiKey = computed(() => store.weatherSet.apiKey)
@@ -155,12 +156,12 @@ onMounted(() => {
   rainCanvas.width = window.innerWidth;
   rainCanvas.height = window.innerHeight;
   ctx = rainCanvas.getContext('2d');
-  console.log('ctx',ctx);
-  window.onresize = () => {
+  emitter.on('windowResize', () => {
     rainCanvas.width = window.innerWidth;
     rainCanvas.height = window.innerHeight;
-  }
+  })
 })
+
 
 function initRain(){
   genRain();
@@ -262,8 +263,8 @@ defineExpose({
 
 <style lang="less" scoped>
 .weather-layer{
-  width: 100%;
-  height:100%;
+  width: 100vw;
+  height:100vh;
   .weather-widget{
     position: absolute;
     right:5%;
