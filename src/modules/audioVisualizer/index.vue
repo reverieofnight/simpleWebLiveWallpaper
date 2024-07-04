@@ -132,13 +132,7 @@ function drawBars(){
       let expect = expectData[index];
       let current = currentData[index];
       let dh = expect - current;
-      let step = 0;
-      if(dh > 0){
-        step = dh * 30 / fpsLimit.value;
-      }
-      if(dh < 0){
-        step = - 2 / fpsLimit.value;
-      }
+      let step = dh * 30 / fpsLimit.value;
       currentData[index] = Math.max(current + step,0);
     })
   }
@@ -173,8 +167,5 @@ defineExpose({
   width: 100vw;
   height:100vh;
   overflow: hidden;
-}
-#audio-visualizer-canvas{
-  // position: absolute;
 }
 </style>
