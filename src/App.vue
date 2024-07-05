@@ -178,21 +178,17 @@ onMounted(() => {
 .view-container{
   width: 100vw;
   height:100vh;
-  .background-layer{
+  .background-layer,
+  .weather-layer,
+  .audio-visualizer-layer,
+  .clock-layer
+  {
+    width: 100%;
+    height:100%;
+    overflow: hidden;
     position: absolute;
     z-index: 0;
-  }
-  .audio-visualizer-layer{
-    position: absolute;
-    z-index:1;
-  }
-  .weather-layer{
-    position: absolute;
-    z-index:2;
-  }
-  .clock-layer{
-    position: absolute;
-    z-index: 3;
+    transform: translate3d(0,0,0);
   }
 }
 *{

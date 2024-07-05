@@ -263,8 +263,7 @@ defineExpose({
 
 <style lang="less" scoped>
 .weather-layer{
-  width: 100vw;
-  height:100vh;
+  
   .weather-widget{
     position: absolute;
     right:5%;

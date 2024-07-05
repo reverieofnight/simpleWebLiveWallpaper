@@ -8,11 +8,11 @@
 import { onMounted, computed } from 'vue';
 import { useStore } from '@/pinia';
 import emitter from '@/utils/mitt';
-let audioArraySample = [];
-for(let i = 0; i < 128;i++){
-  audioArraySample.push(0);
-}
-// import audioArraySample from '../../../samples/audioArraySample';
+// let audioArraySample = [];
+// for(let i = 0; i < 128;i++){
+//   audioArraySample.push(0);
+// }
+import audioArraySample from '../../../samples/audioArraySample';
 const store = useStore();
 const fpsLimit = computed(() => store.fpsLimit);
 let initTimer = "";
@@ -72,7 +72,7 @@ function wallpaperAudioListener(audioArray){
   }
   if(!last){
     last = performance.now();
-    expectData = audioArray;
+    expectData = handlerAudioArray(audioArray);
   }
   if(currentData.length === 0){
     currentData = audioArray;
@@ -101,10 +101,20 @@ function wallpaperAudioListener(audioArray){
     let dt = now - last;
     if(dt >= cacheTime){
       last = now;
-      expectData = audioArray;
+      expectData = handlerAudioArray(audioArray);
     }
   }
   
+}
+//处理音频数据
+function handlerAudioArray(data){
+  //合并左右声道
+  let arr = [];
+  for(let i = 0; i < 64;i++ ){
+    arr.push(data[i]);
+    arr.push(data[i+64]);
+  }
+  return arr;
 }
 //绘制音频bars
 let last2 = '';
@@ -140,7 +150,7 @@ function drawBars(){
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     currentData.forEach((e,i) => {
       let height = Math.min((window.innerHeight / 2) * e,window.innerHeight);
-      ctx.fillRect(barWidth * i + interval*(i - 1),window.innerHeight - height,barWidth,height)
+      ctx.fillRect((barWidth + interval) * i,window.innerHeight - height,barWidth,height)
     })
   if(playing){
     requestAnimationFrame(drawBars)
@@ -163,9 +173,5 @@ defineExpose({
 </script>
 
 <style lang="less" scoped>
-.audio-visualizer-layer{
-  width: 100vw;
-  height:100vh;
-  overflow: hidden;
-}
+
 </style>
