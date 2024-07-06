@@ -15,8 +15,8 @@ const store = useStore();
 const backgroundType = computed(() => store.bgSet.backgroundType)
 const filePath = computed(() => store.bgSet.filePath)
 const showBackground = computed(() => store.bgSet.showBackground)
-// const picsList = [];
-import picsList from '../../../samples/backgroundImages';
+const picsList = [];
+// import picsList from '../../../samples/backgroundImages';
 
 function init() {
 	console.log('初始化背景层');

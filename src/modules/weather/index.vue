@@ -3,7 +3,7 @@
     <div class="weather-widget" :style="{opacity:lives.adcode ? 1 : 0}">
       <div class="top">
         <div class="weather">
-          <svg-icon :name="lives.weather && weatherToIcon(lives.weather)" width="50" height="50"></svg-icon>
+          <svg-icon :name="lives.weather ? weatherToIcon(lives.weather):''" width="50" height="50"></svg-icon>
           <span>{{ lives.weather }}</span>
         </div>
         <div class="right">
@@ -27,6 +27,7 @@ import { weatherToIcon, weatherMerge } from './weatherToIcon';
 import { useStore } from '@/pinia';
 import dayjs from 'dayjs';
 import emitter from '@/utils/mitt';
+import adCodeMap from "@/assets/adCodeMap";
 const store = useStore();
 const cityCode = computed(() => store.weatherSet.cityCode)
 const apiKey = computed(() => store.weatherSet.apiKey)
@@ -54,6 +55,9 @@ function init(){
   }
   initTimer = setTimeout(() => {
     console.log('初始化天气层');
+    if(!apiKey.value){
+      return;
+    }
     getWeather();
     if(timer){
       clearInterval(timer);
@@ -63,28 +67,7 @@ function init(){
     },refreshInterval)
   }, 100);
 }
-function waitCityCode(){
-  return new Promise((resolve, reject) => {
-    if(!cityCode.value){
-      let timer = setInterval(() => {
-        if(cityCode.value){
-          clearInterval(timer);
-          resolve();
-        }
-      },100)
-      setTimeout(() => {
-        if(!cityCode.value){
-          clearInterval(timer);
-          reject('未获得城市编码!')
-        }
-      }, 5000);
-    } else {
-      resolve();
-    }
-  })
-}
 function getWeather(){
-  // let city = '320281';//江阴市
   waitCityCode().then(() => {
     let city = cityCode.value;
     let key = apiKey.value;
@@ -100,33 +83,69 @@ function getWeather(){
     }).then((res) => {
       if(res.status === 200 && res.data && res.data.lives && res.data.lives[0]){
         let data = res.data.lives[0];
+        console.log('实时天气',data);
         setWeatherData(data);
         localStorage.setItem('lives',JSON.stringify(data));
       }
     })
     .catch((err) => {
       console.log('err',err);
-      let tempLives = JSON.parse(localStorage.getItem('lives'))
-      console.log('tempLives',tempLives);
-      if(tempLives && tempLives.reporttime && tempLives.adcode === cityCode.value){
-        let now = dayjs().valueOf();
-        let old = dayjs(tempLives.reporttime).valueOf();
-        let dt = now - old;
-        if(dt <= 4 * 60 * 1000){
-          console.log('离线天气数据过时少于1小时');
-          setWeatherData(tempLives);
-        }
-      }
+      getOfflineWeather();
     })
     .finally(() => {
       
     })
   })
+  .catch((err) => {
+    console.log(err);
+  })
+}
+function waitCityCode(){
+  return new Promise((resolve, reject) => {
+    if(!cityCode.value){
+      //尝试ip定位
+      let data = {
+        key:apiKey.value
+      }
+      axios({
+        url:'https://restapi.amap.com/v3/ip',
+        method:'get',
+        params:data
+      })
+      .then((res) => {
+        if(res.status === 200 && res.data.adcode){
+          console.log('ip定位结果',res.data);
+          store.weatherSet.cityCode = adCodeMap[res.data.city];
+          resolve();
+        }
+      })
+      .catch((err) => {
+        getOfflineWeather();
+        reject('ip定位失败');
+      })
+    } else {
+      resolve();
+    }
+  })
+}
+//获取离线数据
+function getOfflineWeather(){
+  let tempLives = JSON.parse(localStorage.getItem('lives'))
+  if(tempLives && tempLives.reporttime){
+    let now = dayjs().valueOf();
+    let old = dayjs(tempLives.reporttime).valueOf();
+    let dt = now - old;
+    if(dt <= 1 * 60 * 60 * 1000){
+      setWeatherData(tempLives);
+      console.log('离线天气',tempLives);
+    } else {
+      console.log('离线天气数据过时');
+    }
+  }
 }
 //设置天气并且判断是否开启特效
 function setWeatherData(data){
-  Object.assign(lives,data)
-  console.log('实时天气',lives);
+  Object.assign(lives,data);
   if(lives.weather){
     let weather = weatherMerge(lives.weather);
     if(['雨','雨夹雪'].includes(weather)){
@@ -148,11 +167,11 @@ function calcComfort(humidity){
 }
 //下雨效果实现
 let rainCanvas = '';
-let ctx = '';
+let ctx = ''
 const rainArr = [];
-const fpsLimit = computed(() => store.fpsLimit)
+const fpsLimit = computed(() => store.fpsLimit);
 onMounted(() => {
-  rainCanvas = document.getElementById('rain-canvas');
+  rainCanvas = document.getElementById('rain-canvas')
   rainCanvas.width = window.innerWidth;
   rainCanvas.height = window.innerHeight;
   ctx = rainCanvas.getContext('2d');
@@ -161,7 +180,6 @@ onMounted(() => {
     rainCanvas.height = window.innerHeight;
   })
 })
-
 
 function initRain(){
   genRain();
@@ -248,7 +266,7 @@ function destroy(){
     lives.adcode = '';
     setTimeout(() => {
       //清除数据
-      for(let key in lives){
+      for(let key in lives.value){
         lives[key] = '';
       }
     }, 1000);

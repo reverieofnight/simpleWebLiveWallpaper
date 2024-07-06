@@ -89,33 +89,37 @@ onMounted(() => {
             weatherModuleRef.value.destroy();
           }
         }
+        //城市编码
         if(properties.cityCode){
-          if(properties.cityCode.value.length < 6){
-            return;
-          }
-          if(!store.weatherSet.cityCode){
-            store.weatherSet.cityCode = properties.cityCode.value;
-            weatherModuleRef.value.init();
-          } else {
-            if(cityCodeTimer){
-              clearTimeout(cityCodeTimer);
-            }
-            cityCodeTimer = setTimeout(() => {
-              store.weatherSet.cityCode = properties.cityCode.value;
+          let cityCode = properties.cityCode.value;
+          if( cityCode.length === 6){
+            if(!store.weatherSet.cityCode){
+              store.weatherSet.cityCode = cityCode;
               weatherModuleRef.value.init();
-            }, 1000);
+            } else {
+              if(cityCodeTimer){
+                clearTimeout(cityCodeTimer);
+              }
+              cityCodeTimer = setTimeout(() => {
+                store.weatherSet.cityCode = cityCode;
+                weatherModuleRef.value.init();
+              }, 1000);
+            }
           }
+          
         }
+        //定位apiKey
         if(properties.apiKey){
+          let apiKey = properties.apiKey.value;
           if(!store.weatherSet.apiKey){
-            store.weatherSet.apiKey = properties.apiKey.value;
+            store.weatherSet.apiKey = apiKey;
             weatherModuleRef.value.init();
           } else {
             if(apiKeyTimer){
               clearTimeout(apiKeyTimer);
             }
             apiKeyTimer = setTimeout(() => {
-              store.weatherSet.apiKey = properties.apiKey.value;
+              store.weatherSet.apiKey = apiKey;
               weatherModuleRef.value.init();
             }, 1000);
           }
@@ -152,7 +156,7 @@ onMounted(() => {
     store.clockSet.showClock = true;
     clockModuleRef.value.init();
     //显示天气
-    store.weatherSet.cityCode = '110000';//北京市
+    // store.weatherSet.cityCode = '110000';//北京市
     //apiKey
     store.weatherSet.apiKey = 'c7fee6c6ae63763b4d8529c9a8589c83';
     weatherModuleRef.value.init();
@@ -175,6 +179,7 @@ onMounted(() => {
   font-family: "digital";
   src: url("@/assets/fonts/digital.ttf");
 }
+
 .view-container{
   width: 100vw;
   height:100vh;

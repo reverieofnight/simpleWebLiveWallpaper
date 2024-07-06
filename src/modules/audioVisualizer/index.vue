@@ -8,11 +8,11 @@
 import { onMounted, computed } from 'vue';
 import { useStore } from '@/pinia';
 import emitter from '@/utils/mitt';
-// let audioArraySample = [];
-// for(let i = 0; i < 128;i++){
-//   audioArraySample.push(0);
-// }
-import audioArraySample from '../../../samples/audioArraySample';
+let audioArraySample = [];
+for(let i = 0; i < 128;i++){
+  audioArraySample.push(0);
+}
+// import audioArraySample from '../../../samples/audioArraySample';
 const store = useStore();
 const fpsLimit = computed(() => store.fpsLimit);
 let initTimer = "";
