@@ -252,6 +252,8 @@ function genRain(){
   }
 }
 
+// 阴天效果
+
 function destroy(){
   //清除定时器
   if(timer){

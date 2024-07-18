@@ -15,14 +15,20 @@ const store = useStore();
 const backgroundType = computed(() => store.bgSet.backgroundType)
 const filePath = computed(() => store.bgSet.filePath)
 const showBackground = computed(() => store.bgSet.showBackground)
-const picsList = [];
-// import picsList from '../../../samples/backgroundImages';
-
+// const picsList = [];
+import picsList from '../../../samples/backgroundImages';
+let initTimer = '';//初始化防抖定时器
 function init() {
-	console.log('初始化背景层');
-	if(backgroundType.value === 'slide'){
-		initSlide();
+	if(initTimer){
+		clearTimeout(initTimer);
 	}
+	initTimer = setTimeout(() => {
+		console.log('初始化背景层');
+		if(backgroundType.value === 'slide'){
+			initSlide();
+		}
+	},100)
+	
 }
 function destroy() {
 	console.log('销毁背景层');
