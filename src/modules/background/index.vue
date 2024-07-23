@@ -1,9 +1,9 @@
 <template>
 	<div class="background-layer" v-show="showBackground">
-		<div class="static" v-show="backgroundType === 'static'" :style="{ backgroundImage: 'url(' + filePath + ')' }"></div>
+		<img class="static" v-show="backgroundType === 'static'" :src="filePath"></img>
 		<div class="slide" v-show="backgroundType === 'slide'">
-			<div class="before-image" ref="beforeImageRef"></div>
-			<div class="current-image" ref="currentImageRef"></div>
+			<img class="before-image" ref="beforeImageRef" :src="beforeImageSrc"></img>
+			<img class="current-image" ref="currentImageRef" :src="currentImageSrc"></img>
 		</div>
 	</div>
 </template>
@@ -17,6 +17,8 @@ const filePath = computed(() => store.bgSet.filePath)
 const showBackground = computed(() => store.bgSet.showBackground)
 // const picsList = [];
 import picsList from '../../../samples/backgroundImages';
+const beforeImageSrc = ref('');
+const currentImageSrc = ref('');
 let initTimer = '';//初始化防抖定时器
 function init() {
 	if(initTimer){
@@ -48,6 +50,13 @@ onMounted(() => {
 					initSlide();
 				})
 			} else {
+				if(process.env.NODE_ENV === 'development'){
+					if(backgroundType.value === 'static'){
+						let index = Math.floor(picsList.length * Math.random());
+						let filePath = picsList[index];
+						store.bgSet.filePath = filePath;
+					}
+				}
 				nextTick(() => {
 					destroySlide();
 				})
@@ -104,7 +113,7 @@ function switchBackgroundImage() {
 	}
 	
 	function handler(proertyName, filePath) {
-		beforeImageRef.value.style.backgroundImage = 'url(' + filePath + ')';
+		beforeImageSrc.value = filePath;
 		let opacity = 0;
 		requestAnimationFrame(picAppear);
 		// requestAnimationFrame(picAppear);
@@ -134,7 +143,7 @@ function switchBackgroundImage() {
 				requestAnimationFrame(picAppear)
 			} else {
 				opacity = 0;
-				currentImageRef.value.style.backgroundImage = 'url(' + filePath + ')';
+				currentImageSrc.value = filePath;
 				beforeImageRef.value.style.opacity = '0';
 			}
 		}
@@ -156,8 +165,9 @@ defineExpose({
 </script>
 
 <style lang="less" scoped>
-.background-layer{
-	
+//选择src为空字符串或不包含src属性的img
+img[src=""],img:not([src]){
+    opacity:0;
 }
 .static,
 .slide,
@@ -165,10 +175,12 @@ defineExpose({
 .current-image {
 	width: 100%;
 	height: 100%;
+	object-fit:cover;
 	position: absolute;
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: center;
+	transform: translate3d(0,0,0);
+	// background-repeat: no-repeat;
+	// background-size: cover;
+	// background-position: center;
 }
 
 .slide {
