@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed } from 'vue';
+import { onMounted, computed,ref } from 'vue';
 import { useStore } from '@/pinia';
 import emitter from '@/utils/mitt';
 let audioArraySample = [];
@@ -18,7 +18,7 @@ const fpsLimit = computed(() => store.fpsLimit);
 let initTimer = "";
 let currentData = [];
 let expectData = [];
-let playing = false;
+const playing = ref(false);
 let stopReceive = false;
 function init(){
   if(initTimer){
@@ -33,7 +33,7 @@ function init(){
     for(let i = 0;i < 128;i++){
       currentData.push(0);
     }
-    playing = false;
+    playing.value = false;
     stopReceive = false;
     if(process.env.NODE_ENV === 'production'){
       window.wallpaperRegisterAudioListener(wallpaperAudioListener);
@@ -78,12 +78,12 @@ function wallpaperAudioListener(audioArray){
     currentData = audioArray;
   }
   //如果音乐停止了，来音乐了，立即播放
-  if(playing === false && audioArray[0] !== 0){
-    playing = true;
+  if(playing.value === false && audioArray[0] !== 0){
+    playing.value = true;
     requestAnimationFrame(drawBars);
     console.log('音乐开始播放');
   }
-  if(playing === true){
+  if(playing.value === true){
     //如果音乐停止了，则停止绘制
     if(currentData[0] === 0 && audioArray[0] === 0){
       let reallyStop = true;
@@ -93,7 +93,7 @@ function wallpaperAudioListener(audioArray){
         }
       }
       if(reallyStop === true){
-        playing = false;
+        playing.value = false;
         console.log('音乐停止');
       } 
     }
@@ -143,7 +143,11 @@ function drawBars(){
       let current = currentData[index];
       let dh = expect - current;
       let step = dh * 30 / fpsLimit.value;
-      currentData[index] = Math.max(current + step,0);
+      let nextData = current + step;
+      if(nextData < 0.001){
+        nextData = 0;
+      }
+      currentData[index] = nextData;
     })
   }
     ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
@@ -152,7 +156,7 @@ function drawBars(){
       let height = Math.min((window.innerHeight / 2) * e,window.innerHeight);
       ctx.fillRect((barWidth + interval) * i,window.innerHeight - height,barWidth,height)
     })
-  if(playing){
+  if(playing.value){
     requestAnimationFrame(drawBars)
   }
 }
