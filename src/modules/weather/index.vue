@@ -47,6 +47,7 @@ let lives = reactive({
 let timer = '';
 const refreshInterval = 10 * 60 * 1000;
 let rainTimer = '';
+let rainAniId = '';
 //初始化防抖定时器
 let initTimer = '';
 function init(){
@@ -152,7 +153,7 @@ function setWeatherData(data){
       //开启下雨效果
       initRain();
     } else {
-      if(rainTimer){
+      if(rainAniId){
         stopRain();
       }
     }
@@ -183,16 +184,23 @@ onMounted(() => {
 
 function initRain(){
   genRain();
-  if(rainTimer){
-    clearInterval(rainTimer);
+  if(rainAniId){
+    cancelAnimationFrame(rainAniId);
   }
-  rainTimer = setInterval(() => {
-    genRain();
-  },50)
+  rainAniId = requestAnimationFrame(setInterval);
+  function setInterval(){
+    rainTimer = setTimeout(() => {
+      genRain();
+      rainAniId = requestAnimationFrame(setInterval);
+    },50)
+  }
 }
 function stopRain(){
+  if(rainAniId){
+    cancelAnimationFrame(rainAniId);
+  }
   if(rainTimer){
-    clearInterval(rainTimer);
+    clearTimeout(rainTimer);
   }
 }
 function genRain(){
@@ -260,8 +268,8 @@ function destroy(){
     clearInterval(timer);
   }
   //清除下雨定时器
-  if(rainTimer){
-    clearInterval(rainTimer)
+  if(rainAniId){
+    cancelAnimationFrame(rainAniId);
   }
   //隐藏天气层
   if(lives.adcode){
