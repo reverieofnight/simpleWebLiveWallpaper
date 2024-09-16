@@ -23,7 +23,7 @@
 <script setup>
 import { onMounted, reactive, ref, computed } from 'vue';
 import axios from 'axios';
-import { weatherToIcon, weatherMerge } from './weatherToIcon';
+import { weatherToIcon, weatherMerge, weatherMergeList } from './weatherToIcon';
 import { useStore } from '@/pinia';
 import dayjs from 'dayjs';
 import emitter from '@/utils/mitt';
@@ -204,23 +204,36 @@ function stopRain(){
   }
 }
 function genRain(){
-  let x = Math.random() * window.innerWidth;
   let y = -100;
-  let height = Math.random()*40 + 10;
-  let width = height / 50;
-  let speed = height / 3;
-  let opacity = height / 50;
-  let rain = {
-    x,
-    y,
-    width,
-    height,
-    speed,
-    opacity,
+  let num = 1;
+  weatherMergeList['雨'].forEach((e,index) => {
+    if(e === lives.weather){
+      num = (index + 1) * (index + 1);
+    }
+  })
+  weatherMergeList['雨夹雪'].forEach((e,index) => {
+    if(e === lives.weather){
+      num = (index + 1) * (index + 1);
+    }
+  })
+  for(let i = 0; i < num;i++){
+    let x = Math.random() * window.innerWidth;
+    let height = Math.random()*40 + 10;
+    let width = height / 50;
+    let speed = height / 1;
+    let opacity = height / 50;
+    let rain = {
+      x,
+      y,
+      width,
+      height,
+      speed,
+      opacity,
+    }
+    rainArr.push(rain);
   }
-  rainArr.push(rain);
   //如果绘画已经停止，重新启动绘画
-  if(rainArr.length === 1){
+  if(rainArr.length === num){
     requestAnimationFrame(drawRain);
     // drawRain();
   }
