@@ -15,6 +15,7 @@
         </div>
       </div>
       <div class="city">{{ lives.city }}</div>
+      <div class="message" :style="{opacity:message.opacity}">{{ message.value }}</div>
     </div>
     <canvas id="rain-canvas" ref="rainCanvas"></canvas>
   </div>
@@ -48,6 +49,10 @@ let timer = '';
 const refreshInterval = 10 * 60 * 1000;
 let rainTimer = '';
 let rainAniId = '';
+const message = reactive({
+  value:'天气数据已更新',
+  opacity:0,
+})
 //初始化防抖定时器
 let initTimer = '';
 function init(){
@@ -147,7 +152,9 @@ function getOfflineWeather(){
 //设置天气并且判断是否开启特效
 function setWeatherData(data){
   Object.assign(lives,data);
+  showMessage();
   if(lives.weather){
+    // lives.weather = '中雨';
     let weather = weatherMerge(lives.weather);
     if(['雨','雨夹雪'].includes(weather)){
       //开启下雨效果
@@ -158,7 +165,15 @@ function setWeatherData(data){
       }
     }
   }
+  //显示天气数据更新提示
+  function showMessage(){
+    message.opacity = 1;
+    setTimeout(() => {
+      message.opacity = 0;
+    },5000)
+  }
 }
+//计算是否舒适
 function calcComfort(humidity){
   if(humidity >= 40 && humidity <= 70){
     return 'smile'
@@ -183,24 +198,31 @@ onMounted(() => {
 })
 
 function initRain(){
-  genRain();
-  if(rainAniId){
-    cancelAnimationFrame(rainAniId);
+  // if(rainAniId){
+  //   stopRain();
+  // }
+  // rainAniId = requestAnimationFrame(setInterval);
+  // function setInterval(){
+  //   rainTimer = setTimeout(() => {
+  //     genRain();
+  //     rainAniId = requestAnimationFrame(setInterval);
+  //   },50)
+  // }
+  if(rainTimer){
+    clearInterval(rainTimer);
   }
-  rainAniId = requestAnimationFrame(setInterval);
-  function setInterval(){
-    rainTimer = setTimeout(() => {
-      genRain();
-      rainAniId = requestAnimationFrame(setInterval);
-    },50)
-  }
+  rainTimer = setInterval(() => {
+    genRain();
+  },50)
+
 }
 function stopRain(){
-  if(rainAniId){
-    cancelAnimationFrame(rainAniId);
-  }
+  // if(rainAniId){
+  //   cancelAnimationFrame(rainAniId);
+  // }
   if(rainTimer){
-    clearTimeout(rainTimer);
+    // clearTimeout(rainTimer);
+    clearInterval(rainTimer);
   }
 }
 function genRain(){
@@ -237,39 +259,39 @@ function genRain(){
     requestAnimationFrame(drawRain);
     // drawRain();
   }
-  let last = '';
-  let fpsThreshold = 0;
-  //绘制雨滴将落的效果
-  function drawRain(){
-    if(!last){
-      last = performance.now() / 1000;
-    } else {
-      let now = performance.now() / 1000;
-      let dt = Math.min(now - last,1);
-      last = now; 
-      if(fpsLimit.value > 0){
-        fpsThreshold += dt;
-        if(fpsThreshold < 1.0 / fpsLimit.value){
-          requestAnimationFrame(drawRain);
-          return;
-        }
-        fpsThreshold -= 1.0 / fpsLimit.value;
+}
+let last = '';
+let fpsThreshold = 0;
+//绘制雨滴将落的效果
+function drawRain(){
+  if(!last){
+    last = performance.now() / 1000;
+  } else {
+    let now = performance.now() / 1000;
+    let dt = Math.min(now - last,1);
+    last = now; 
+    if(fpsLimit.value > 0){
+      fpsThreshold += dt;
+      if(fpsThreshold < 1.0 / fpsLimit.value){
+        requestAnimationFrame(drawRain);
+        return;
       }
+      fpsThreshold -= 1.0 / fpsLimit.value;
     }
+  }
+  ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
+  rainArr.forEach((e,index) => {
+    ctx.fillStyle = 'rgb(255,255,255,' + e.opacity + ')';
+    ctx.fillRect(e.x,e.y,e.width,e.height);
+    e.y = e.y + e.speed * (60 / fpsLimit.value);
+    if(e.y > window.innerHeight){
+      rainArr.splice(index,1);
+    }
+  })
+  if(rainArr.length > 0){
+    requestAnimationFrame(drawRain);
+  } else {
     ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
-    rainArr.forEach((e,index) => {
-      ctx.fillStyle = 'rgb(255,255,255,' + e.opacity + ')';
-      ctx.fillRect(e.x,e.y,e.width,e.height);
-      e.y = e.y + e.speed * (60 / fpsLimit.value);
-      if(e.y > window.innerHeight){
-        rainArr.splice(index,1);
-      }
-    })
-    if(rainArr.length > 0){
-      requestAnimationFrame(drawRain);
-    } else {
-      ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
-    }
   }
 }
 
@@ -281,8 +303,11 @@ function destroy(){
     clearInterval(timer);
   }
   //清除下雨定时器
-  if(rainAniId){
-    cancelAnimationFrame(rainAniId);
+  // if(rainAniId){
+  //   cancelAnimationFrame(rainAniId);
+  // }
+  if(rainTimer){
+    clearInterval(rainTimer);
   }
   //隐藏天气层
   if(lives.adcode){
@@ -352,6 +377,10 @@ defineExpose({
     .city{
       text-align: center;
       font-size: 30px;
+    }
+    .message{
+      text-align: center;
+      transition: opacity 0.5s linear;
     }
     svg{
       filter: drop-shadow(0 0 3px rgba(0,0,0,0.4));

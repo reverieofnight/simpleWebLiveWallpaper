@@ -148,7 +148,7 @@ onMounted(() => {
     //背景类型为幻灯片
     store.bgSet.backgroundType = 'slide';
     //持续时间为6s
-    store.bgSet.duration = 0.1 * 1000 * 60;
+    store.bgSet.duration = 0.5 * 1000 * 60;
     //文件目录
     store.bgSet.fileDirectory = 'fileDirectory';
     backgroundModuleRef.value.init();
