@@ -160,7 +160,7 @@ function setWeatherData(data){
       //开启下雨效果
       initRain();
     } else {
-      if(rainAniId){
+      if(rainTimer){
         stopRain();
       }
     }
