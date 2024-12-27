@@ -15,11 +15,15 @@ const store = useStore();
 const backgroundType = computed(() => store.bgSet.backgroundType)
 const filePath = computed(() => store.bgSet.filePath)
 const showBackground = computed(() => store.bgSet.showBackground)
+const fpsLimit = computed(() => store.fpsLimit)
+const switchAnimation = computed(() => store.bgSet.switchAnimation)
 const picsList = [];
 // import picsList from '../../../samples/backgroundImages';
 const beforeImageSrc = ref('');
 const currentImageSrc = ref('');
 let initTimer = '';//初始化防抖定时器
+let firstIn = true;
+let switchAniId = '';
 function init() {
 	if(initTimer){
 		clearTimeout(initTimer);
@@ -52,7 +56,7 @@ onMounted(() => {
 			} else {
 				if(process.env.NODE_ENV === 'development'){
 					if(backgroundType.value === 'static'){
-						let index = Math.floor(picsList.length * Math.random());
+						let index = Math.round(picsList.length * Math.random());
 						let filePath = picsList[index];
 						store.bgSet.filePath = filePath;
 					}
@@ -68,6 +72,15 @@ onMounted(() => {
 		})
 		watch(fileDirectory,(val) => {
 			console.log('文件目录改变',val);
+			initSlide();
+		})
+		watch(switchAnimation,(val) => {
+			console.log('切换动画效果改变',val);
+			if(switchAniId){
+				cancelAnimationFrame(switchAniId);
+			}
+			beforeImageRef.value.style.transform = 'translate3d(0,0,0)';
+			currentImageRef.value.style.transform = 'translate3d(0,0,0)';
 			initSlide();
 		})
 })
@@ -98,55 +111,180 @@ function initSlide() {
 }
 //切换幻灯片
 function switchBackgroundImage() {
-	if (process.env.NODE_ENV === 'production') {
-		window.wallpaperRequestRandomFileForProperty('fileDirectory', (propertyName, filePath) => {
-			filePath = 'file:///' + filePath;
-			handler('', filePath);
-		});
-	} else if (process.env.NODE_ENV === 'development') {
-		let index = Math.floor(picsList.length * Math.random());
-		let filePath = picsList[index];
-		console.log('filePath',filePath);
-		if(filePath){
-			handler('', filePath);
+	if(firstIn){
+		firstIn = false;
+		let wallpaper = getWallpaperFileInfo();
+		if(wallpaper){
+			let now = new Date().getTime();
+			let time = wallpaper.time;
+			if(now - time < duration.value){
+				handler(wallpaper.filePath);
+			} else {
+				getWallpaperFilePath();
+			}
+		} else {
+			getWallpaperFilePath();
+		}
+	} else {
+		getWallpaperFilePath();
+	}
+
+	function getWallpaperFilePath(){
+		if (process.env.NODE_ENV === 'production') {
+			window.wallpaperRequestRandomFileForProperty('fileDirectory', (propertyName, filePath) => {
+				if(filePath){
+					filePath = 'file:///' + filePath;
+					console.log('filePath',filePath);
+					saveWallpaperFileInfo(filePath);
+					handler(filePath);
+				} else {
+					console.log('未获取到壁纸文件！');
+				}
+			});
+		} else if (process.env.NODE_ENV === 'development') {
+			let index = Math.round(picsList.length * Math.random());
+			let filePath = picsList[index];
+			console.log('filePath',filePath);
+			if(filePath){
+				saveWallpaperFileInfo(filePath);
+				handler(filePath);
+			} else {
+				console.log('未检测到壁纸文件！');
+			}
+		}
+	}
+	//将当前壁纸地址保存在本地
+	function saveWallpaperFileInfo(filePath) {
+		localStorage.setItem('wallpaperFileInfo',JSON.stringify({
+			filePath:filePath,
+			time:new Date().getTime()
+		}));
+	}
+	//获取本地保存的壁纸信息
+	function getWallpaperFileInfo() {
+		let wallpaperFileInfo = JSON.parse(localStorage.getItem('wallpaperFileInfo'));
+		if(wallpaperFileInfo){
+			return wallpaperFileInfo;
+		} else {
+			return false;
 		}
 	}
 	
-	function handler(proertyName, filePath) {
-		beforeImageSrc.value = filePath;
-		let opacity = 0;
-		requestAnimationFrame(picAppear);
-		// requestAnimationFrame(picAppear);
+
+	function handler(filePath) {
 		//绘制动画过程
-		const fpsLimit = computed(() => store.fpsLimit)
 		let last = '';
 		let fpsThreshold = 0;
-		function picAppear(){
-			if(!last){
-				last = performance.now() / 1000;
-			} else {
-				let now = performance.now() / 1000;
-				let dt = Math.min(now - last,1);
-				last = now; 
-				if(fpsLimit.value > 0){
-					fpsThreshold += dt;
-					if(fpsThreshold < 1.0 / fpsLimit.value){
-						requestAnimationFrame(picAppear);
-						return;
-					}
-					fpsThreshold -= 1.0 / fpsLimit.value;
-				}
-			}
-			beforeImageRef.value.style.opacity = opacity;
-			if(opacity < 1){
-				opacity += 0.01 * (60 / fpsLimit.value);
-				requestAnimationFrame(picAppear)
-			} else {
-				opacity = 0;
-				currentImageSrc.value = filePath;
-				beforeImageRef.value.style.opacity = '0';
+		chooseAnimation(switchAnimation.value);
+
+		function chooseAnimation(value){
+			switch(value){
+				case 'fade':
+					fade();
+					break;
+				case 'slide':
+					slide();
+					break;
+				case 'random':
+					random();
+					break;
+				default :
+					fade();
 			}
 		}
+		
+		function fade(){
+			if(switchAniId){
+				cancelAnimationFrame(switchAniId);
+			}
+			let opacity = 0;
+			beforeImageSrc.value = filePath;
+			beforeImageRef.value.style.opacity = opacity;
+			switchAniId = requestAnimationFrame(draw);
+			function draw(){
+				if(!last){
+					last = performance.now() / 1000;
+				} else {
+					let now = performance.now() / 1000;
+					let dt = Math.min(now - last,1);
+					last = now; 
+					if(fpsLimit.value > 0){
+						fpsThreshold += dt;
+						if(fpsThreshold < 1.0 / fpsLimit.value){
+							switchAniId = requestAnimationFrame(draw);
+							return;
+						}
+						fpsThreshold -= 1.0 / fpsLimit.value;
+					}
+				}
+				beforeImageRef.value.style.opacity = opacity;
+				if(opacity < 1){
+					opacity += 0.01 * (60 / fpsLimit.value);
+					switchAniId = requestAnimationFrame(draw);
+				} else {
+					opacity = 0;
+					currentImageSrc.value = filePath;
+					beforeImageRef.value.style.opacity = '0';
+				}
+			}
+		}
+		//滑动效果
+		function slide(){
+			if(switchAniId){
+				cancelAnimationFrame(switchAniId);
+			}
+			if(currentImageSrc.value){
+				//设置前景图片为之前的图片
+				beforeImageSrc.value = currentImageSrc.value;
+				//前景图片显示在后景图片之上
+				beforeImageRef.value.style.opacity = '1';
+			}
+			
+			//后景图片的地址为要更新的图片
+			currentImageSrc.value = filePath;
+			//将后景图片移动到屏幕右侧外
+			currentImageRef.value.style.transform = 'translate3d(100%,0,0)';
+			let x = 0;
+			setTimeout(() => {
+				//开始绘制
+				switchAniId = requestAnimationFrame(draw);
+			},100)
+			function draw(){
+				if(!last){
+					last = performance.now() / 1000;
+				} else {
+					let now = performance.now() / 1000;
+					let dt = Math.min(now - last,1);
+					last = now; 
+					if(fpsLimit.value > 0){
+						fpsThreshold += dt;
+						if(fpsThreshold < 1.0 / fpsLimit.value){
+							switchAniId = requestAnimationFrame(draw);
+							return;
+						}
+						fpsThreshold -= 1.0 / fpsLimit.value;
+					}
+				}
+				if(x < 100){
+					beforeImageRef.value.style.transform = 'translate3d(' + -x + '%,0,0)'
+					currentImageRef.value.style.transform = 'translate3d(' + (100 - x) + '%,0,0)'
+					x += 1 * (60 / fpsLimit.value);
+					switchAniId = requestAnimationFrame(draw);
+				} else {
+					beforeImageRef.value.style.opacity = '0';
+					beforeImageRef.value.style.transform = 'translate3d(0,0,0)';
+					currentImageRef.value.style.transform = 'translate3d(0,0,0)';
+				}
+			}
+		}
+		function random(){
+			let animationList = ['fade','slide'];
+			let index = Math.round(animationList.length * Math.random());
+			chooseAnimation(animationList[index]);
+		}
+		
+		
+		
 	}
 }
 //销毁幻灯片

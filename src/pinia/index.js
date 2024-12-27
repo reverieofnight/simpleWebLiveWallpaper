@@ -7,6 +7,7 @@ const store = {
                 backgroundType:'',
                 filePath:'',
                 duration:'',
+                switchAnimation:'',
             },
             clockSet:{
                 showClock:false,

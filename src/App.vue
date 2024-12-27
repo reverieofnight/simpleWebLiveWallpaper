@@ -69,6 +69,10 @@ onMounted(() => {
           }
           
         }
+        //切换动画效果
+        if(properties.switchAnimation){
+          store.bgSet.switchAnimation = properties.switchAnimation.value;
+        }
         //显示时钟
         if(properties.showClock){
           let showClock = properties.showClock.value;
@@ -147,8 +151,10 @@ onMounted(() => {
     store.bgSet.showBackground = true;
     //背景类型为幻灯片
     store.bgSet.backgroundType = 'slide';
-    //持续时间为6s
-    store.bgSet.duration = 0.5 * 1000 * 60;
+    //持续时间
+    store.bgSet.duration = 0.1 * 1000 * 60;
+    //切换效果
+    store.bgSet.switchAnimation = 'random';
     //文件目录
     store.bgSet.fileDirectory = 'fileDirectory';
     backgroundModuleRef.value.init();
@@ -164,7 +170,7 @@ onMounted(() => {
     store.visSet.audioVisualizer = true;
     audioVisualizerModuleRef.value.init();
     //设置fps
-    store.fpsLimit = 60;
+    store.fpsLimit = 165;
     console.log('帧数限制',store.fpsLimit);
   }
   window.onresize = () => {
@@ -183,6 +189,7 @@ onMounted(() => {
 .view-container{
   width: 100vw;
   height:100vh;
+  background-color: black;
   .background-layer,
   .weather-layer,
   .audio-visualizer-layer,

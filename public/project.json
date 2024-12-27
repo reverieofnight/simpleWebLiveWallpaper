@@ -12,14 +12,18 @@
 				"ui_audioVisualizer" : "audio Visualizer",
 				"ui_backgroundType" : "background Type",
 				"ui_cityCode" : "city Code",
+				"ui_fadeAnimation" : "fade",
 				"ui_fileDirectory" : "file Directory",
 				"ui_filePath" : "file Path",
 				"ui_picDuration" : "duration(min)",
+				"ui_randomAnimation" : "random",
 				"ui_showBackground" : "show Background",
 				"ui_showClock" : "show Clock",
 				"ui_showWeather" : "show Weather",
 				"ui_slide" : "slide",
-				"ui_static" : "static"
+				"ui_slideAnimation" : "slide",
+				"ui_static" : "static",
+				"ui_switchAnimation" : "switchAnimation"
 			},
 			"zh-chs" : 
 			{
@@ -27,14 +31,18 @@
 				"ui_audioVisualizer" : "音频可视化",
 				"ui_backgroundType" : "背景类型",
 				"ui_cityCode" : "城市编码",
+				"ui_fadeAnimation" : "渐入",
 				"ui_fileDirectory" : "文件夹路径",
 				"ui_filePath" : "文件路径",
 				"ui_picDuration" : "持续时间(分钟)",
+				"ui_randomAnimation" : "随机",
 				"ui_showBackground" : "显示背景",
 				"ui_showClock" : "显示时钟",
 				"ui_showWeather" : "显示天气",
 				"ui_slide" : "图片幻灯片",
-				"ui_static" : "静态背景"
+				"ui_slideAnimation" : "滑动",
+				"ui_static" : "静态背景",
+				"ui_switchAnimation" : "切换动画效果"
 			}
 		},
 		"properties" : 
@@ -42,8 +50,8 @@
 			"apiKey" : 
 			{
 				"condition" : "showWeather.value == true",
-				"index" : 8,
-				"order" : 108,
+				"index" : 9,
+				"order" : 109,
 				"text" : "ui_apiKey",
 				"type" : "textinput",
 				"value" : ""
@@ -51,14 +59,14 @@
 			"apihelp" : 
 			{
 				"condition" : "showWeather.value == true",
-				"index" : 9,
-				"order" : 109,
+				"index" : 10,
+				"order" : 110,
 				"text" : "<a href='https://steamcommunity.com/sharedfiles/filedetails/?id=3277017252' >没有apiKey?点击这里查看帮助</a>"
 			},
 			"audioVisualizer" : 
 			{
-				"index" : 10,
-				"order" : 110,
+				"index" : 11,
+				"order" : 111,
 				"text" : "ui_audioVisualizer",
 				"type" : "bool",
 				"value" : true
@@ -86,8 +94,8 @@
 			"cityCode" : 
 			{
 				"condition" : "showWeather.value == true",
-				"index" : 7,
-				"order" : 107,
+				"index" : 8,
+				"order" : 108,
 				"text" : "ui_cityCode",
 				"type" : "textinput",
 				"value" : "110000"
@@ -142,19 +150,43 @@
 			},
 			"showClock" : 
 			{
-				"index" : 5,
-				"order" : 105,
+				"index" : 6,
+				"order" : 106,
 				"text" : "ui_showClock",
 				"type" : "bool",
 				"value" : true
 			},
 			"showWeather" : 
 			{
-				"index" : 6,
-				"order" : 106,
+				"index" : 7,
+				"order" : 107,
 				"text" : "ui_showWeather",
 				"type" : "bool",
 				"value" : true
+			},
+			"switchAnimation" : 
+			{
+				"condition" : "showBackground.value == true && backgroundType.value == \"slide\"",
+				"index" : 5,
+				"options" : 
+				[
+					{
+						"label" : "ui_fadeAnimation",
+						"value" : "fade"
+					},
+					{
+						"label" : "ui_slideAnimation",
+						"value" : "slide"
+					},
+					{
+						"label" : "ui_randomAnimation",
+						"value" : "random"
+					}
+				],
+				"order" : 105,
+				"text" : "ui_switchAnimation",
+				"type" : "combo",
+				"value" : "fade"
 			}
 		},
 		"supportsaudioprocessing" : true
@@ -165,7 +197,7 @@
 	"tags" : [ "Music" ],
 	"title" : "simpleWebLiveWallpaper",
 	"type" : "Web",
-	"version" : 22,
+	"version" : 23,
 	"visibility" : "public",
 	"workshopid" : "3277017252",
 	"workshopurl" : "steam://url/CommunityFilePage/3277017252"
