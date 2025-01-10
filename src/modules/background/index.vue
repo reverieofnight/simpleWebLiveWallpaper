@@ -279,7 +279,7 @@ function switchBackgroundImage() {
 		}
 		function random(){
 			let animationList = ['fade','slide'];
-			let index = Math.round(animationList.length * Math.random());
+			let index = Math.round((animationList.length-1) * Math.random());
 			chooseAnimation(animationList[index]);
 		}
 		
