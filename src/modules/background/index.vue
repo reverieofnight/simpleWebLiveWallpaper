@@ -142,8 +142,10 @@ function switchBackgroundImage() {
 				}
 			});
 		} else if (process.env.NODE_ENV === 'development') {
-			let index = Math.round(picsList.length * Math.random());
+			let index = Math.round((picsList.length - 1) * Math.random());
 			let filePath = picsList[index];
+			console.log('index',index);
+			
 			console.log('filePath',filePath);
 			if(filePath){
 				saveWallpaperFileInfo(filePath);
@@ -184,6 +186,9 @@ function switchBackgroundImage() {
 					break;
 				case 'slide':
 					slide();
+					break;
+				case 'moveToBack':
+					moveToBack();
 					break;
 				case 'random':
 					random();
@@ -277,9 +282,82 @@ function switchBackgroundImage() {
 				}
 			}
 		}
+		//当前壁纸移动到后面，使后面的壁纸显示出来
+		function moveToBack(){
+			console.log('moveToBack');
+			if(switchAniId){
+				cancelAnimationFrame(switchAniId);
+			}
+			if(!currentImageSrc.value){
+				fade();
+			} else {
+				beforeImageSrc.value = currentImageSrc.value;
+				beforeImageRef.value.style.opacity = 1;
+				currentImageSrc.value = filePath;
+				let bx = 0;
+				let bxx = 0;
+				let bscale = 0;
+				let cscalex = 0;
+				let cscale = -30;
+				let duration = 1;
+				currentImageRef.value.style.transform = `translate3d(0,0,${cscale}vw)`;
+				let first = true;
+				let second = false;
+				setTimeout(() => {
+					//开始绘制
+					switchAniId = requestAnimationFrame(draw);
+				},100)
+				
+				function draw(){
+					if(!last){
+						last = performance.now() / 1000;
+					} else {
+						let now = performance.now() / 1000;
+						let dt = Math.min(now - last,1);
+						last = now; 
+						if(fpsLimit.value > 0){
+							fpsThreshold += dt;
+							if(fpsThreshold < 1.0 / fpsLimit.value){
+								switchAniId = requestAnimationFrame(draw);
+								return;
+							}
+							fpsThreshold -= 1.0 / fpsLimit.value;
+						}
+					}
+					if(first && bx < 100){
+						bxx += 100 / (fpsLimit.value * duration);
+						bx = Math.sin(Math.PI * bxx / 200) * 100;
+						bscale -= 30 / (fpsLimit.value * duration);
+						beforeImageRef.value.style.transform = `translate3d(${bx}%,0,${bscale}vw)`;
+						switchAniId = requestAnimationFrame(draw);
+					} else if(bx >= 100){
+						bx = 100;
+						first = false;
+						second = true;
+						switchAniId = requestAnimationFrame(draw);
+					}
+					if(second && bx > 0 && cscale < 0){
+						bxx -= 100 / (fpsLimit.value * duration);
+						bx = Math.sin(Math.PI * bxx / 200) * 100;
+						cscalex += 30 / (fpsLimit.value * duration);
+						cscale = -30 + Math.sin(Math.PI * cscalex / 60) * 30;
+						beforeImageRef.value.style.transform = `translate3d(${bx}%,0,${bscale}vw)`;
+						currentImageRef.value.style.transform = `translate3d(0,0,${cscale}vw)`;
+						switchAniId = requestAnimationFrame(draw);
+					} else if(second && cscale >= 0){
+						bx = 0;
+						second = false;
+						currentImageRef.value.style.transform = `translate3d(0,0,0)`;
+						beforeImageRef.value.style.opacity = '0';
+						beforeImageRef.value.style.transform = `translate3d(0,0,0)`;
+					}
+					
+				}
+			}
+		}
 		function random(){
-			let animationList = ['fade','slide'];
-			let index = Math.round((animationList.length-1) * Math.random());
+			let animationList = ['fade','slide','moveToBack'];
+			let index = Math.round((animationList.length - 1) * Math.random());
 			chooseAnimation(animationList[index]);
 		}
 		
@@ -322,6 +400,7 @@ img[src=""],img:not([src]){
 }
 
 .slide {
+	transform-style: preserve-3d;
 	.before-image {
 		z-index: 1;
 		transform: translate(0, 0);
@@ -330,5 +409,8 @@ img[src=""],img:not([src]){
 	.current-image {
 		z-index: 0;
 	}
+}
+.background-layer {
+	perspective: 1000px;
 }
 </style>

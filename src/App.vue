@@ -154,7 +154,7 @@ onMounted(() => {
     //持续时间
     store.bgSet.duration = 0.1 * 1000 * 60;
     //切换效果
-    store.bgSet.switchAnimation = 'random';
+    store.bgSet.switchAnimation = 'moveToBack';
     //文件目录
     store.bgSet.fileDirectory = 'fileDirectory';
     backgroundModuleRef.value.init();
