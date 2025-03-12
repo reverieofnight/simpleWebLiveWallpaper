@@ -55,6 +55,10 @@ onMounted(() => {
         if(properties.filePath){
           store.bgSet.filePath = 'file:///' + properties.filePath.value;
         }
+        //视频文件路径
+        if(properties.videoFilePath){
+          store.bgSet.videoFilePath = 'file:///' + properties.videoFilePath.value;
+        }
         //持续时间
         if(properties.picDuration){
           if(!store.bgSet.duration){

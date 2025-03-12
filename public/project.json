@@ -24,7 +24,9 @@
 				"ui_slide" : "slide",
 				"ui_slideAnimation" : "slide",
 				"ui_static" : "static",
-				"ui_switchAnimation" : "switchAnimation"
+				"ui_switchAnimation" : "switchAnimation",
+				"ui_video" : "video",
+				"ui_videoFilePath" : "video Path"
 			},
 			"zh-chs" : 
 			{
@@ -44,7 +46,9 @@
 				"ui_slide" : "图片幻灯片",
 				"ui_slideAnimation" : "滑动",
 				"ui_static" : "静态背景",
-				"ui_switchAnimation" : "切换动画效果"
+				"ui_switchAnimation" : "切换动画效果",
+				"ui_video" : "视频",
+				"ui_videoFilePath" : "视频路径"
 			}
 		},
 		"properties" : 
@@ -52,8 +56,8 @@
 			"apiKey" : 
 			{
 				"condition" : "showWeather.value == true",
-				"index" : 9,
-				"order" : 109,
+				"index" : 10,
+				"order" : 110,
 				"text" : "ui_apiKey",
 				"type" : "textinput",
 				"value" : ""
@@ -61,14 +65,14 @@
 			"apihelp" : 
 			{
 				"condition" : "showWeather.value == true",
-				"index" : 10,
-				"order" : 110,
+				"index" : 11,
+				"order" : 111,
 				"text" : "<a href='https://steamcommunity.com/sharedfiles/filedetails/?id=3277017252' >没有apiKey?点击这里查看帮助</a>"
 			},
 			"audioVisualizer" : 
 			{
-				"index" : 11,
-				"order" : 111,
+				"index" : 12,
+				"order" : 112,
 				"text" : "ui_audioVisualizer",
 				"type" : "bool",
 				"value" : true
@@ -86,6 +90,10 @@
 					{
 						"label" : "ui_slide",
 						"value" : "slide"
+					},
+					{
+						"label" : "ui_video",
+						"value" : "video"
 					}
 				],
 				"order" : 101,
@@ -96,8 +104,8 @@
 			"cityCode" : 
 			{
 				"condition" : "showWeather.value == true",
-				"index" : 8,
-				"order" : 108,
+				"index" : 9,
+				"order" : 109,
 				"text" : "ui_cityCode",
 				"type" : "textinput",
 				"value" : "110000"
@@ -105,9 +113,9 @@
 			"fileDirectory" : 
 			{
 				"condition" : "showBackground.value == true && backgroundType.value == \"slide\"",
-				"index" : 3,
+				"index" : 4,
 				"mode" : "ondemand",
-				"order" : 103,
+				"order" : 104,
 				"text" : "ui_fileDirectory",
 				"type" : "directory",
 				"value" : ""
@@ -125,10 +133,10 @@
 			{
 				"condition" : "showBackground.value == true && backgroundType.value == \"slide\"",
 				"fraction" : true,
-				"index" : 4,
+				"index" : 5,
 				"max" : 60,
 				"min" : 0.1,
-				"order" : 104,
+				"order" : 105,
 				"precision" : 2,
 				"step" : 0.1,
 				"text" : "ui_picDuration",
@@ -152,16 +160,16 @@
 			},
 			"showClock" : 
 			{
-				"index" : 6,
-				"order" : 106,
+				"index" : 7,
+				"order" : 107,
 				"text" : "ui_showClock",
 				"type" : "bool",
 				"value" : true
 			},
 			"showWeather" : 
 			{
-				"index" : 7,
-				"order" : 107,
+				"index" : 8,
+				"order" : 108,
 				"text" : "ui_showWeather",
 				"type" : "bool",
 				"value" : true
@@ -169,7 +177,7 @@
 			"switchAnimation" : 
 			{
 				"condition" : "showBackground.value == true && backgroundType.value == \"slide\"",
-				"index" : 5,
+				"index" : 6,
 				"options" : 
 				[
 					{
@@ -189,10 +197,20 @@
 						"value" : "random"
 					}
 				],
-				"order" : 105,
+				"order" : 106,
 				"text" : "ui_switchAnimation",
 				"type" : "combo",
 				"value" : "fade"
+			},
+			"videoFilePath" : 
+			{
+				"condition" : "showBackground.value == true && backgroundType.value == \"video\"",
+				"fileType" : "video",
+				"index" : 3,
+				"order" : 103,
+				"text" : "ui_videoFilePath",
+				"type" : "file",
+				"value" : ""
 			}
 		},
 		"supportsaudioprocessing" : true
@@ -203,7 +221,7 @@
 	"tags" : [ "Music" ],
 	"title" : "simpleWebLiveWallpaper",
 	"type" : "Web",
-	"version" : 25,
+	"version" : 26,
 	"visibility" : "public",
 	"workshopid" : "3277017252",
 	"workshopurl" : "steam://url/CommunityFilePage/3277017252"

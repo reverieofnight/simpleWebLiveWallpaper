@@ -5,6 +5,7 @@
 			<img class="before-image" ref="beforeImageRef" :src="beforeImageSrc"></img>
 			<img class="current-image" ref="currentImageRef" :src="currentImageSrc"></img>
 		</div>
+		<video class="background-video" :src="videoFilePath" autoplay muted loop v-show="backgroundType === 'video'"></video>
 	</div>
 </template>
 
@@ -14,6 +15,8 @@ import { ref, watch, nextTick, computed, onMounted } from 'vue';
 const store = useStore();
 const backgroundType = computed(() => store.bgSet.backgroundType)
 const filePath = computed(() => store.bgSet.filePath)
+// const videoFilePath = new URL('../../../samples/GalaxyHome.mp4', import.meta.url);
+const videoFilePath = computed(() => store.bgSet.videoFilePath)
 const showBackground = computed(() => store.bgSet.showBackground)
 const fpsLimit = computed(() => store.fpsLimit)
 const switchAnimation = computed(() => store.bgSet.switchAnimation)
@@ -412,5 +415,11 @@ img[src=""],img:not([src]){
 }
 .background-layer {
 	perspective: 1000px;
+}
+.background-video {
+width: 100%;
+height: 100%;
+object-fit:cover;
+position: absolute;
 }
 </style>

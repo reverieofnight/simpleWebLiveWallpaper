@@ -6,6 +6,7 @@ const store = {
                 showBackground:'',
                 backgroundType:'',
                 filePath:'',
+                videoFilePath:'',
                 duration:'',
                 switchAnimation:'',
             },
