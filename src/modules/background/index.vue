@@ -5,7 +5,7 @@
 			<img class="before-image" ref="beforeImageRef" :src="beforeImageSrc"></img>
 			<img class="current-image" ref="currentImageRef" :src="currentImageSrc"></img>
 		</div>
-		<video class="background-video" :src="videoFilePath" autoplay muted loop v-show="backgroundType === 'video'"></video>
+		<video class="background-video" :src="videoFilePath" autoplay muted loop v-if="backgroundType === 'video'"></video>
 	</div>
 </template>
 
