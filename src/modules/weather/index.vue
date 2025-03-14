@@ -150,6 +150,7 @@ function getOfflineWeather(){
   }
 }
 //设置天气并且判断是否开启特效
+let raining = false;//是否正在下雨
 function setWeatherData(data){
   Object.assign(lives,data);
   showMessage();
@@ -198,32 +199,12 @@ onMounted(() => {
 })
 
 function initRain(){
-  // if(rainAniId){
-  //   stopRain();
-  // }
-  // rainAniId = requestAnimationFrame(setInterval);
-  // function setInterval(){
-  //   rainTimer = setTimeout(() => {
-  //     genRain();
-  //     rainAniId = requestAnimationFrame(setInterval);
-  //   },50)
-  // }
-  if(rainTimer){
-    clearInterval(rainTimer);
-  }
-  rainTimer = setInterval(() => {
-    genRain();
-  },50)
+  raining = true;
+  genRain();
 
 }
 function stopRain(){
-  // if(rainAniId){
-  //   cancelAnimationFrame(rainAniId);
-  // }
-  if(rainTimer){
-    // clearTimeout(rainTimer);
-    clearInterval(rainTimer);
-  }
+  raining = false;
 }
 function genRain(){
   let y = -100;
@@ -257,8 +238,12 @@ function genRain(){
   //如果绘画已经停止，重新启动绘画
   if(rainArr.length === num){
     requestAnimationFrame(drawRain);
-    // drawRain();
   }
+  setTimeout(() => {
+    if(raining){
+      genRain();
+    }
+  },50)
 }
 let last = '';
 let fpsThreshold = 0;
@@ -302,12 +287,9 @@ function destroy(){
   if(timer){
     clearInterval(timer);
   }
-  //清除下雨定时器
-  // if(rainAniId){
-  //   cancelAnimationFrame(rainAniId);
-  // }
-  if(rainTimer){
-    clearInterval(rainTimer);
+  //结束下雨
+  if(raining){
+    stopRain();
   }
   //隐藏天气层
   if(lives.adcode){
@@ -341,11 +323,6 @@ defineExpose({
     width:180px;
     height:140px;
     font-family: 'Microsoft YaHei','SimHei';
-    // background-color: rgba(255,255,255,0.3);
-    // border:1px solid #ddd;
-    // backdrop-filter: blur(10px);
-    // cursor: pointer;
-    // user-select:none;
     transition: opacity 1s ease;
     .top{
       display: flex;
