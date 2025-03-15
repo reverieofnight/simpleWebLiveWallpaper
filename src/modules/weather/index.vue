@@ -47,8 +47,6 @@ let lives = reactive({
 })
 let timer = '';
 const refreshInterval = 10 * 60 * 1000;
-let rainTimer = '';
-let rainAniId = '';
 const message = reactive({
   value:'天气数据已更新',
   opacity:0,
@@ -161,7 +159,7 @@ function setWeatherData(data){
       //开启下雨效果
       initRain();
     } else {
-      if(rainTimer){
+      if(raining){
         stopRain();
       }
     }
