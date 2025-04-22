@@ -59,6 +59,10 @@ onMounted(() => {
         if(properties.videoFilePath){
           store.bgSet.videoFilePath = 'file:///' + properties.videoFilePath.value;
         }
+        //视频音量
+        if(properties.videoVolume){
+          store.bgSet.videoVolume = properties.videoVolume.value;
+        }
         //持续时间
         if(properties.picDuration){
           if(!store.bgSet.duration){
@@ -161,6 +165,8 @@ onMounted(() => {
     store.bgSet.switchAnimation = 'moveToBack';
     //文件目录
     store.bgSet.fileDirectory = 'fileDirectory';
+    // 视频音量
+    store.bgSet.videoVolume = 0.5;
     backgroundModuleRef.value.init();
     //显示时钟
     store.clockSet.showClock = true;

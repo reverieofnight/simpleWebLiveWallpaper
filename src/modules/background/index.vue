@@ -5,7 +5,7 @@
 			<img class="before-image" ref="beforeImageRef" :src="beforeImageSrc"></img>
 			<img class="current-image" ref="currentImageRef" :src="currentImageSrc"></img>
 		</div>
-		<video class="background-video" :src="videoFilePath" autoplay muted loop v-if="backgroundType === 'video'"></video>
+		 <div id="videoContainer" v-show="backgroundType === 'video'"></div>
 	</div>
 </template>
 
@@ -20,10 +20,13 @@ const videoFilePath = computed(() => store.bgSet.videoFilePath)
 const showBackground = computed(() => store.bgSet.showBackground)
 const fpsLimit = computed(() => store.fpsLimit)
 const switchAnimation = computed(() => store.bgSet.switchAnimation)
+const videoVolume = computed(() => store.bgSet.videoVolume)
 const picsList = [];
 // import picsList from '../../../samples/backgroundImages';
 const beforeImageSrc = ref('');
 const currentImageSrc = ref('');
+let player = null;
+let playerContainer = null;
 let initTimer = '';//初始化防抖定时器
 let firstIn = true;
 let switchAniId = '';
@@ -56,6 +59,11 @@ onMounted(() => {
 				nextTick(() => {
 					initSlide();
 				})
+			} else if (val === 'video' && videoFilePath.value){
+				initPlayer();
+				nextTick(() => {
+					player.play();	
+				})
 			} else {
 				if(process.env.NODE_ENV === 'development'){
 					if(backgroundType.value === 'static'){
@@ -68,6 +76,9 @@ onMounted(() => {
 					destroySlide();
 				})
 			}
+			if(val !== 'video' && player){
+				destoryPlayer();
+			}
 		})
 		watch(duration,(val) => {
 			console.log('持续时间改变',val);
@@ -76,6 +87,34 @@ onMounted(() => {
 		watch(fileDirectory,(val) => {
 			console.log('文件目录改变',val);
 			initSlide();
+		})
+		watch(videoFilePath,(val) => {
+			console.log('视频文件路径改变',val);
+			if(backgroundType.value === 'video'){
+				if(val === 'file:///'){
+					if(player){
+						destoryPlayer();
+					}
+				} else {
+					if(player){
+						player.setAttribute('src',val);
+						nextTick(() => {
+							player.play();
+						})
+					} else {
+						initPlayer();
+						nextTick(() => {
+							player.play();	
+						})
+					}
+				}
+			}
+		})
+		watch(videoVolume,(val) => {
+			console.log('视频音量改变',val);
+			if(player){
+				player.volume = val;
+			}	
 		})
 		watch(switchAnimation,(val) => {
 			console.log('切换动画效果改变',val);
@@ -88,6 +127,39 @@ onMounted(() => {
 		})
 })
 let initDelayTimer = '';
+function initPlayer(){
+	if(player){
+		return;
+	} else {
+		playerContainer = document.getElementById('videoContainer');
+		if(playerContainer){
+			player = document.createElement('video');
+			if(videoFilePath.value && videoFilePath.value !== 'file:///'){
+				player.setAttribute('src',videoFilePath.value);
+			}
+			player.volume = videoVolume.value;
+			player.setAttribute('muted','muted');
+			player.setAttribute('loop','loop');
+			// player.classList.add('background-video');
+			player.style.width = '100%';
+			player.style.height = '100%';
+			player.style.objectFit = 'cover';
+			player.style.position = 'absolute';
+			playerContainer.appendChild(player);
+		}
+		
+	}
+}
+function destoryPlayer(){
+	if(!player){
+		return;
+	}
+	player.pause();
+	player.removeAttribute('src');
+	// player.load();
+	playerContainer.removeChild(player);
+	player = null;
+}
 //初始化幻灯片
 function initSlide() {
 	if(!fileDirectory.value){
@@ -416,10 +488,14 @@ img[src=""],img:not([src]){
 .background-layer {
 	perspective: 1000px;
 }
+#videoContainer{
+	width: 100%;
+	height: 100%;
+}
 .background-video {
-width: 100%;
-height: 100%;
-object-fit:cover;
-position: absolute;
+	width: 100%;
+	height: 100%;
+	object-fit:cover;
+	position: absolute;
 }
 </style>
