@@ -53,15 +53,19 @@ function init(){
 }
 let visCanvas = '';
 let ctx = '';
+let windowWidth = window.innerWidth;
+let windowHeight = window.innerHeight;
 onMounted(() => {
   visCanvas = document.getElementById('audio-visualizer-canvas');
-  visCanvas.width = window.innerWidth;
-  visCanvas.height = window.innerHeight;
+  visCanvas.width = windowWidth;
+  visCanvas.height = windowHeight;
   ctx = visCanvas.getContext('2d');
   emitter.on('windowResize', () => {
-    visCanvas.width = window.innerWidth;
-    visCanvas.height = window.innerHeight;
-    barWidth = (window.innerWidth - (127 * interval)) / 128;
+    windowWidth = window.innerWidth;
+    windowHeight = window.innerHeight;
+    visCanvas.width = windowWidth;
+    visCanvas.height = windowHeight;
+    barWidth = (windowWidth - (127 * interval)) / 128;
   })
 })
 let cacheTime = 33.3;//缓冲时间 毫秒
@@ -78,7 +82,7 @@ function wallpaperAudioListener(audioArray){
     currentData = audioArray;
   }
   //如果音乐停止了，来音乐了，立即播放
-  if(playing.value === false && audioArray[0] !== 0){
+  if(playing.value === false && audioArray.some(value => value !== 0)){
     playing.value = true;
     requestAnimationFrame(drawBars);
     console.log('音乐开始播放');
@@ -86,13 +90,9 @@ function wallpaperAudioListener(audioArray){
   if(playing.value === true){
     //如果音乐停止了，则停止绘制
     if(currentData[0] === 0 && audioArray[0] === 0){
-      let reallyStop = true;
-      for(let i = 0; i< 128;i++){
-        if(currentData[i] !== 0 || audioArray[0] !== 0){
-          reallyStop = false;
-        }
-      }
-      if(reallyStop === true){
+      // 判断是否真的停止了
+      let reallyStop = currentData.every(value => value === 0) && audioArray.every(value => value === 0);
+      if(reallyStop){
         playing.value = false;
         console.log('音乐停止');
       } 
@@ -104,7 +104,6 @@ function wallpaperAudioListener(audioArray){
       expectData = handlerAudioArray(audioArray);
     }
   }
-  
 }
 //处理音频数据
 function handlerAudioArray(data){
@@ -120,7 +119,7 @@ function handlerAudioArray(data){
 let last2 = '';
 let fpsThreshold = 0;
 let interval = 2;
-let barWidth = (window.innerWidth - (127 * interval)) / 128;
+let barWidth = (windowWidth - (127 * interval)) / 128;
 function drawBars(){
   if(!last2){
     last2 = performance.now() / 1000;
@@ -150,12 +149,17 @@ function drawBars(){
       currentData[index] = nextData;
     })
   }
-    ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    currentData.forEach((e,i) => {
-      let height = Math.min((window.innerHeight / 2) * e,window.innerHeight);
-      ctx.fillRect((barWidth + interval) * i,window.innerHeight - height,barWidth,height)
-    })
+  ctx.clearRect(0,0,windowWidth,windowHeight);
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  currentData.forEach((e,i) => {
+    let height = Math.min((windowHeight / 2) * e,windowHeight);
+    ctx.fillRect((barWidth + interval) * i,windowHeight - height,barWidth,height)
+  })
+  // 检查 currentData 是否全部为 0
+  let isAllZero = currentData.every(value => value === 0) && expectData.every(value => value === 0);
+  if (isAllZero) {
+    playing.value = false; // 设置播放状态为 false
+  }
   if(playing.value){
     requestAnimationFrame(drawBars)
   }
@@ -163,12 +167,11 @@ function drawBars(){
 function destroy(){
   console.log('销毁音频可视化层');
   stopReceive = true;
-  let arr = [];
-  for(let i = 0; i < 128;i++){
-    arr.push(0)
-  }
-  expectData = arr;
-  requestAnimationFrame(drawBars);
+  // 清空预期数据，让 currentData 逐渐降为 0
+  expectData = new Array(128).fill(0);
+  // 确保开始播放状态，让 drawBars 继续执行
+  playing.value = true;
+  
 }
 defineExpose({
   init,
