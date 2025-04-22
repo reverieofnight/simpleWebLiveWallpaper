@@ -68,18 +68,16 @@ onMounted(() => {
     barWidth = (windowWidth - (127 * interval)) / 128;
   })
 })
-let cacheTime = 33.3;//缓冲时间 毫秒
-let last = 0;
+
 function wallpaperAudioListener(audioArray){
   if(stopReceive){
     return;
   }
-  if(!last){
-    last = performance.now();
+  if(expectData.length === 0){
     expectData = handlerAudioArray(audioArray);
   }
   if(currentData.length === 0){
-    currentData = audioArray;
+    currentData = new Array(128).fill(0);
   }
   //如果音乐停止了，来音乐了，立即播放
   if(playing.value === false && audioArray.some(value => value !== 0)){
@@ -97,12 +95,7 @@ function wallpaperAudioListener(audioArray){
         console.log('音乐停止');
       } 
     }
-    let now = performance.now();
-    let dt = now - last;
-    if(dt >= cacheTime){
-      last = now;
-      expectData = handlerAudioArray(audioArray);
-    }
+    expectData = handlerAudioArray(audioArray);
   }
 }
 //处理音频数据
@@ -141,7 +134,10 @@ function drawBars(){
       let expect = expectData[index];
       let current = currentData[index];
       let dh = expect - current;
-      let step = dh * 30 / fpsLimit.value;
+      let step = dh * 33.3 / fpsLimit.value;
+      if(Math.abs(step) >= Math.abs(dh)){
+        step = dh;
+      }
       let nextData = current + step;
       if(nextData < 0.001){
         nextData = 0;
