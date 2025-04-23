@@ -119,12 +119,14 @@ let last2 = '';
 let fpsThreshold = 0;
 let interval = 2;
 let barWidth = (windowWidth - (127 * interval)) / 128;
+let transitionSpeed = 33.3;//反应速度 越高反应越快，抖动越厉害，越低，越平滑，但是反应也就越慢
+let dt = 0;// 帧时间差：记录相邻两帧之间的时间间隔，单位为秒，用于确保动画在不同帧率下表现一致
 function drawBars(){
   if(!last2){
     last2 = performance.now() / 1000;
   } else {
     let now = performance.now() / 1000;
-    let dt = Math.min(now - last2,1);
+    dt = Math.min(now - last2,1);
     last2 = now;
     if(fpsLimit.value > 0){
       fpsThreshold += dt;
@@ -140,7 +142,8 @@ function drawBars(){
       let expect = expectData[index];
       let current = currentData[index];
       let dh = expect - current;
-      let step = dh * 33.3 / fpsLimit.value;
+      // 使用dt计算步长，确保动画在不同帧率下表现一致
+      let step = dh * transitionSpeed * dt;
       if(Math.abs(step) >= Math.abs(dh)){
         step = dh;
       }
