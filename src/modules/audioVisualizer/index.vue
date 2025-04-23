@@ -15,7 +15,8 @@ for(let i = 0; i < 128;i++){
 // import audioArraySample from '../../../samples/audioArraySample';
 const store = useStore();
 const fpsLimit = computed(() => store.fpsLimit);
-let initTimer = "";
+let initTimer = null;
+let audioSimulatorTimer = '';
 let currentData = [];
 let expectData = [];
 const playing = ref(false);
@@ -25,6 +26,7 @@ function init(){
     clearTimeout(initTimer);
   }
   initTimer = setTimeout(() => {
+    initTimer = null;//清除定时器标识
     console.log('初始化音频可视化层');
     //清空正在播放的数据
     currentData.length = 0;
@@ -40,7 +42,10 @@ function init(){
     } else if(process.env.NODE_ENV === 'development') {
       //模拟数据
       let i = 0;
-      setInterval(() => {
+      if(audioSimulatorTimer){
+        clearInterval(audioSimulatorTimer);
+      }
+      audioSimulatorTimer = setInterval(() => {
         let arr = audioArraySample[i];
         wallpaperAudioListener(arr);
         i++;
@@ -60,15 +65,16 @@ onMounted(() => {
   visCanvas.width = windowWidth;
   visCanvas.height = windowHeight;
   ctx = visCanvas.getContext('2d');
-  emitter.on('windowResize', () => {
-    windowWidth = window.innerWidth;
+  emitter.on('windowResize', handleWindowResize);
+})
+
+function handleWindowResize(){
+  windowWidth = window.innerWidth;
     windowHeight = window.innerHeight;
     visCanvas.width = windowWidth;
     visCanvas.height = windowHeight;
     barWidth = (windowWidth - (127 * interval)) / 128;
-  })
-})
-
+}
 function wallpaperAudioListener(audioArray){
   if(stopReceive){
     return;
@@ -165,8 +171,15 @@ function destroy(){
   stopReceive = true;
   // 清空预期数据，让 currentData 逐渐降为 0
   expectData = new Array(128).fill(0);
-  // 确保开始播放状态，让 drawBars 继续执行
-  playing.value = true;
+  // 清除未执行的定时器
+  if(initTimer){
+    clearTimeout(initTimer);
+  }
+  if(audioSimulatorTimer){
+    clearInterval(audioSimulatorTimer);
+  }
+  //取消订阅事件
+  emitter.off('windowResize', handleWindowResize);
   
 }
 defineExpose({
