@@ -277,6 +277,10 @@ async function switchBackgroundImage() {
 		//绘制动画过程
 		let last = '';
 		let fpsThreshold = 0;
+		if(!currentImageSrc.value){
+			fade();
+			return;
+		}
 		if(switchAniId){
 			cancelAnimationFrame(switchAniId);
 			beforeImageRef.value.style.opacity = '0';
@@ -388,59 +392,55 @@ async function switchBackgroundImage() {
 		//当前壁纸移动到后面，使后面的壁纸显示出来
 		function moveToBack(){
 			console.log('moveToBack');
-			if(!currentImageSrc.value){
-				fade();
-			} else {
-				beforeImageSrc.value = currentImageSrc.value;
-				beforeImageRef.value.style.opacity = 1;
-				currentImageSrc.value = filePath;
-				let bx = 0;
-				let bxx = 0;
-				let bscale = 0;
-				let cscalex = 0;
-				let cscale = -30;
-				let duration = 1;
-				currentImageRef.value.style.transform = `translate3d(0,0,${cscale}vw)`;
-				let first = true;
-				let second = false;
-				let dt = 0;//帧间差
-				nextTick(() => {
+			beforeImageSrc.value = currentImageSrc.value;
+			beforeImageRef.value.style.opacity = 1;
+			currentImageSrc.value = filePath;
+			let bx = 0;
+			let bxx = 0;
+			let bscale = 0;
+			let cscalex = 0;
+			let cscale = -30;
+			let duration = 1;
+			currentImageRef.value.style.transform = `translate3d(0,0,${cscale}vw)`;
+			let first = true;
+			let second = false;
+			let dt = 0;//帧间差
+			nextTick(() => {
+				switchAniId = requestAnimationFrame(draw);
+			})
+			function draw(){
+				if(!fpsCheck()){
 					switchAniId = requestAnimationFrame(draw);
-				})
-				function draw(){
-					if(!fpsCheck()){
-						switchAniId = requestAnimationFrame(draw);
-						return;	
-					}
-					if(first && bx < 100){
-						bxx += 100 / (fpsLimit.value * duration);
-						bx = Math.sin(Math.PI * bxx / 200) * 100;
-						bscale -= 30 / (fpsLimit.value * duration);
-						beforeImageRef.value.style.transform = `translate3d(${bx}%,0,${bscale}vw)`;
-						switchAniId = requestAnimationFrame(draw);
-					} else if(bx >= 100){
-						bx = 100;
-						first = false;
-						second = true;
-						switchAniId = requestAnimationFrame(draw);
-					}
-					if(second && bx > 0 && cscale < 0){
-						bxx -= 100 / (fpsLimit.value * duration);
-						bx = Math.sin(Math.PI * bxx / 200) * 100;
-						cscalex += 30 / (fpsLimit.value * duration);
-						cscale = -30 + Math.sin(Math.PI * cscalex / 60) * 30;
-						beforeImageRef.value.style.transform = `translate3d(${bx}%,0,${bscale}vw)`;
-						currentImageRef.value.style.transform = `translate3d(0,0,${cscale}vw)`;
-						switchAniId = requestAnimationFrame(draw);
-					} else if(second && cscale >= 0){
-						bx = 0;
-						second = false;
-						currentImageRef.value.style.transform = `translate3d(0,0,0)`;
-						beforeImageRef.value.style.opacity = '0';
-						beforeImageRef.value.style.transform = `translate3d(0,0,0)`;
-					}
-					
+					return;	
 				}
+				if(first && bx < 100){
+					bxx += 100 / (fpsLimit.value * duration);
+					bx = Math.sin(Math.PI * bxx / 200) * 100;
+					bscale -= 30 / (fpsLimit.value * duration);
+					beforeImageRef.value.style.transform = `translate3d(${bx}%,0,${bscale}vw)`;
+					switchAniId = requestAnimationFrame(draw);
+				} else if(bx >= 100){
+					bx = 100;
+					first = false;
+					second = true;
+					switchAniId = requestAnimationFrame(draw);
+				}
+				if(second && bx > 0 && cscale < 0){
+					bxx -= 100 / (fpsLimit.value * duration);
+					bx = Math.sin(Math.PI * bxx / 200) * 100;
+					cscalex += 30 / (fpsLimit.value * duration);
+					cscale = -30 + Math.sin(Math.PI * cscalex / 60) * 30;
+					beforeImageRef.value.style.transform = `translate3d(${bx}%,0,${bscale}vw)`;
+					currentImageRef.value.style.transform = `translate3d(0,0,${cscale}vw)`;
+					switchAniId = requestAnimationFrame(draw);
+				} else if(second && cscale >= 0){
+					bx = 0;
+					second = false;
+					currentImageRef.value.style.transform = `translate3d(0,0,0)`;
+					beforeImageRef.value.style.opacity = '0';
+					beforeImageRef.value.style.transform = `translate3d(0,0,0)`;
+				}
+				
 			}
 		}
 		function random(){

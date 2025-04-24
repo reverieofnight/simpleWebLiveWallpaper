@@ -155,10 +155,17 @@ function drawBars(){
     })
   }
   ctx.clearRect(0,0,windowWidth,windowHeight);
+  // 设置阴影属性
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'; // 阴影颜色
+  ctx.shadowBlur = 10; // 阴影模糊程度
+  ctx.shadowOffsetX = 2; // 阴影水平偏移量
+  ctx.shadowOffsetY = 2; // 阴影垂直偏移量
   ctx.fillStyle = 'rgba(255,255,255,0.7)';
   currentData.forEach((e,i) => {
     let height = Math.min((windowHeight / 2) * e,windowHeight);
-    ctx.fillRect((barWidth + interval) * i,windowHeight - height,barWidth,height)
+    let x = (barWidth + interval) * i;
+    let y = windowHeight - height;
+    ctx.fillRect(x, y + barWidth / 2, barWidth, height - barWidth / 2);
   })
   // 检查 currentData 是否全部为 0
   let isAllZero = currentData.every(value => value === 0) && expectData.every(value => value === 0);
