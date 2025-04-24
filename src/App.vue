@@ -1,9 +1,12 @@
 <template>
   <div class="view-container">
     <backgroundModule ref="backgroundModuleRef" />
+    <audioVisualizerModule ref="audioVisualizerModuleRef" />
     <weatherModule ref="weatherModuleRef" />
     <clockModule ref="clockModuleRef" />
-    <audioVisualizerModule ref="audioVisualizerModuleRef" />
+    <div class="control-panel" v-if="backgroundType === 'slide'">
+      <button class="button" @click="handleClickNext">下一张</button>
+    </div>
   </div>
 </template>
 
@@ -12,7 +15,7 @@ import backgroundModule from '@/modules/background/index.vue'
 import clockModule from '@/modules/clock/index.vue';
 import weatherModule from '@/modules/weather/index.vue';
 import audioVisualizerModule from '@/modules/audioVisualizer/index.vue';
-import { onMounted,ref } from 'vue';
+import { onMounted,ref,computed } from 'vue';
 import { useStore } from "@/pinia";
 import emitter from '@/utils/mitt';
 
@@ -21,6 +24,7 @@ const clockModuleRef = ref();
 const weatherModuleRef = ref();
 const audioVisualizerModuleRef = ref();
 const store = useStore();
+const backgroundType = computed(() => store.bgSet.backgroundType)
 onMounted(() => {
   console.log('store',store);
   console.log('环境',process.env.NODE_ENV );
@@ -188,6 +192,10 @@ onMounted(() => {
   }
 })
 
+function handleClickNext(){
+  backgroundModuleRef.value.handleClickNext();
+}
+
 </script>
 
 <style lang="less">
@@ -211,6 +219,33 @@ onMounted(() => {
     position: absolute;
     z-index: 0;
     transform: translate3d(0,0,0);
+  }
+  .control-panel{
+    padding:20px;
+    position: absolute;
+    right:5%;
+    top:20%;
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    &:hover{
+      opacity: 1; 
+    }
+    .button{
+      padding:10px 20px;
+      margin:10px;
+      font-size:20px;
+      font-weight: bold;
+      cursor: pointer;
+      color:white;
+      text-shadow: 0 0 3px rgba(0,0,0,0.7);
+      background-color: rgba(255,255,255,0.3);
+      border:1px solid white;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      opacity: 0.7;
+    }
+    
   }
 }
 *{
