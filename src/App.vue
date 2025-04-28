@@ -150,6 +150,16 @@ onMounted(() => {
             audioVisualizerModuleRef.value.destroy();
           }
         }
+        //条形可视化
+        if(properties.enableBar){
+          let enableBar = properties.enableBar.value;
+          store.visSet.enableBar = enableBar;
+        }
+        //圆形可视化
+        if(properties.enableCircle){
+          let enableCircle = properties.enableCircle.value;
+          store.visSet.enableCircle = enableCircle;
+        }
       },
       applyGeneralProperties:function(properties){
         if(properties.fps){
@@ -182,6 +192,8 @@ onMounted(() => {
     weatherModuleRef.value.init();
     //音频可视化
     store.visSet.audioVisualizer = true;
+    store.visSet.enableBar = true;
+    store.visSet.enableCircle = true;
     audioVisualizerModuleRef.value.init();
     //设置fps
     store.fpsLimit = 165;

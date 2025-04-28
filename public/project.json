@@ -12,6 +12,8 @@
 				"ui_audioVisualizer" : "audio Visualizer",
 				"ui_backgroundType" : "background Type",
 				"ui_cityCode" : "city Code",
+				"ui_enableBar" : "enable Bar",
+				"ui_enableCircle" : "enable Circle",
 				"ui_fadeAnimation" : "fade",
 				"ui_fileDirectory" : "file Directory",
 				"ui_filePath" : "file Path",
@@ -35,6 +37,8 @@
 				"ui_audioVisualizer" : "音频可视化",
 				"ui_backgroundType" : "背景类型",
 				"ui_cityCode" : "城市编码",
+				"ui_enableBar" : "开启条形可视化",
+				"ui_enableCircle" : "开启圆形可视化",
 				"ui_fadeAnimation" : "渐入",
 				"ui_fileDirectory" : "文件夹路径",
 				"ui_filePath" : "文件路径",
@@ -111,6 +115,24 @@
 				"text" : "ui_cityCode",
 				"type" : "textinput",
 				"value" : "110000"
+			},
+			"enableBar" : 
+			{
+				"condition" : "audioVisualizer.value == true",
+				"index" : 14,
+				"order" : 114,
+				"text" : "ui_enableBar",
+				"type" : "bool",
+				"value" : true
+			},
+			"enableCircle" : 
+			{
+				"condition" : "audioVisualizer.value == true",
+				"index" : 15,
+				"order" : 115,
+				"text" : "ui_enableCircle",
+				"type" : "bool",
+				"value" : false
 			},
 			"fileDirectory" : 
 			{
@@ -236,7 +258,7 @@
 	"ratingviolence" : "none",
 	"tags" : [ "Music" ],
 	"title" : "simpleWebLiveWallpaper",
-	"type" : "Web",
+	"type" : "web",
 	"version" : 35,
 	"visibility" : "public",
 	"workshopid" : "3277017252",

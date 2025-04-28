@@ -21,6 +21,8 @@ const store = {
             },
             visSet:{
                 audioVisualizer:'',
+                enableBar:'',
+                enableCircle:'',
             },
             fpsLimit:'',
         }
