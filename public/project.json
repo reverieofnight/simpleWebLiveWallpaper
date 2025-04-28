@@ -258,8 +258,8 @@
 	"ratingviolence" : "none",
 	"tags" : [ "Music" ],
 	"title" : "simpleWebLiveWallpaper",
-	"type" : "web",
-	"version" : 35,
+	"type" : "Web",
+	"version" : 36,
 	"visibility" : "public",
 	"workshopid" : "3277017252",
 	"workshopurl" : "steam://url/CommunityFilePage/3277017252"
