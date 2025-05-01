@@ -268,9 +268,7 @@ function drawInit(){
       ctx.shadowOffsetX = 2;
       ctx.shadowOffsetY = 2;
       // ctx.save(); // 保存当前画布状态
-      ctx.translate(centerX, centerY); // 将画布原点移动到圆心
       // ctx.rotate(rotationAngle); // 旋转画布
-      ctx.translate(-centerX, -centerY); // 将画布原点移回原来位置
       ctx.beginPath();// 开始绘制路径
       for (let i = 0; i < barCount; i++) {
         const angle = i * angleStep;
