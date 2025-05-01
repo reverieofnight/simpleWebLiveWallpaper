@@ -22,6 +22,7 @@
 				"ui_randomAnimation" : "random",
 				"ui_showBackground" : "show Background",
 				"ui_showClock" : "show Clock",
+				"ui_showFPS" : "show FPS",
 				"ui_showWeather" : "show Weather",
 				"ui_slide" : "slide",
 				"ui_slideAnimation" : "slide",
@@ -47,6 +48,7 @@
 				"ui_randomAnimation" : "随机",
 				"ui_showBackground" : "显示背景",
 				"ui_showClock" : "显示时钟",
+				"ui_showFPS" : "显示FPS",
 				"ui_showWeather" : "显示天气",
 				"ui_slide" : "图片幻灯片",
 				"ui_slideAnimation" : "滑动",
@@ -190,6 +192,15 @@
 				"type" : "bool",
 				"value" : true
 			},
+			"showFPS" : 
+			{
+				"condition" : "audioVisualizer.value == true",
+				"index" : 16,
+				"order" : 116,
+				"text" : "ui_showFPS",
+				"type" : "bool",
+				"value" : false
+			},
 			"showWeather" : 
 			{
 				"index" : 9,
@@ -259,7 +270,7 @@
 	"tags" : [ "Music" ],
 	"title" : "simpleWebLiveWallpaper",
 	"type" : "Web",
-	"version" : 36,
+	"version" : 37,
 	"visibility" : "public",
 	"workshopid" : "3277017252",
 	"workshopurl" : "steam://url/CommunityFilePage/3277017252"

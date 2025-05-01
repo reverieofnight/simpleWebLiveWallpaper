@@ -160,6 +160,11 @@ onMounted(() => {
           let enableCircle = properties.enableCircle.value;
           store.visSet.enableCircle = enableCircle;
         }
+        //显示FPS
+        if(properties.showFPS){
+          let showFPS = properties.showFPS.value;
+          store.visSet.showFPS = showFPS;
+        }
       },
       applyGeneralProperties:function(properties){
         if(properties.fps){
@@ -194,6 +199,7 @@ onMounted(() => {
     store.visSet.audioVisualizer = true;
     store.visSet.enableBar = true;
     store.visSet.enableCircle = true;
+    store.visSet.showFPS = showFPS;
     audioVisualizerModuleRef.value.init();
     //设置fps
     store.fpsLimit = 165;

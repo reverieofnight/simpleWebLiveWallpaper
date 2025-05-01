@@ -18,12 +18,14 @@ const store = useStore();
 const fpsLimit = computed(() => store.fpsLimit);
 const enableBar = computed(() => store.visSet.enableBar);
 const enableCircle = computed(() => store.visSet.enableCircle);
+const showFPS = computed(() => store.visSet.showFPS);
 let initTimer = null;
 let audioSimulatorTimer = '';
 let currentData = [];
 let expectData = [];
 const playing = ref(false);
 let stopReceive = false;
+let fpsThresholdMin = 1 / fpsLimit.value;
 function init(){
   if(initTimer){
     clearTimeout(initTimer);
@@ -92,6 +94,9 @@ watch(enableCircle,(val) => {
     init();
   }
 })
+watch(fpsLimit,(val) => {
+  fpsThresholdMin = 1 / val;
+})
 function wallpaperAudioListener(audioArray){
   if(stopReceive){
     return;
@@ -142,8 +147,11 @@ function drawInit(){
   }
   console.log('开始绘制');
   let last = '';
+  let now = '';
   let fpsThreshold = 0;
-  
+  let fps = 0;
+  let lastRenderTime = 0;
+  let renderNum = 0;
   let transitionSpeed = 33.3;//反应速度 越高反应越快，抖动越厉害，越低，越平滑，但是反应也就越慢
   let dt = 0;// 帧时间差：记录相邻两帧之间的时间间隔，单位为秒，用于确保动画在不同帧率下表现一致
 
@@ -177,21 +185,30 @@ function drawInit(){
       sinCache[i] = Math.sin(angleStep * i); // 预计算 sin 值
     } 
   }
-  drawBars();
+  requestAnimationFrame(drawBars);
   function drawBars(){
     if(!last){
       last = performance.now() / 1000;
+      lastRenderTime = last;
     } else {
-      let now = performance.now() / 1000;
+      now = performance.now() / 1000;
       dt = Math.min(now - last,1);
       last = now;
       if(fpsLimit.value > 0){
         fpsThreshold += dt;
-        if(fpsThreshold < 1.0 / fpsLimit.value){
+        if(fpsThreshold < fpsThresholdMin){
           requestAnimationFrame(drawBars);
           return;
         }
-        fpsThreshold -= 1.0 / fpsLimit.value;
+        fpsThreshold -= fpsThresholdMin;
+        if(showFPS.value){
+          renderNum++;
+          if(now - lastRenderTime > 1){
+            fps = renderNum;
+            renderNum = 0;
+            lastRenderTime = now;
+          }
+        } 
       }
     }
     if(currentData.length > 0 && expectData.length > 0){
@@ -212,6 +229,11 @@ function drawInit(){
       }
     }
     ctx.clearRect(0,0,windowWidth,windowHeight);
+    if(showFPS.value){
+      ctx.font = '20px Arial';
+      ctx.fillText(`FPS:${fps}`,100,100);
+    }
+    
     if(enableBar.value){
       // 绘制条形音频bars
       // 设置阴影属性
@@ -289,6 +311,8 @@ function drawInit(){
     }
     if(playing.value || (enableCircle.value && alpha > 0)){
       requestAnimationFrame(drawBars)
+    } else {
+      ctx.clearRect(0,0,windowWidth,windowHeight);
     }
   }
 }

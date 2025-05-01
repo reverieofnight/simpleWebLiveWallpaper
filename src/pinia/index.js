@@ -20,9 +20,10 @@ const store = {
                 apiKey:'',
             },
             visSet:{
-                audioVisualizer:'',
-                enableBar:'',
-                enableCircle:'',
+                audioVisualizer:false,
+                enableBar:false,
+                enableCircle:false,
+                showFPS:false,
             },
             fpsLimit:'',
         }
