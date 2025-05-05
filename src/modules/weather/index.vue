@@ -195,14 +195,21 @@ onMounted(() => {
     rainCanvas.height = window.innerHeight;
   })
 })
-
+let rainTimer = '';
 function initRain(){
   raining = true;
-  genRain();
-
+  if(rainTimer){
+    clearInterval(rainTimer);
+  }
+  rainTimer = setInterval(() => {
+    genRain();
+  },50)
 }
 function stopRain(){
   raining = false;
+  if(rainTimer){
+    clearInterval(rainTimer);
+  }
 }
 function genRain(){
   let y = -100;
@@ -237,11 +244,6 @@ function genRain(){
   if(rainArr.length === num){
     requestAnimationFrame(drawRain);
   }
-  setTimeout(() => {
-    if(raining){
-      genRain();
-    }
-  },50)
 }
 let last = '';
 let fpsThreshold = 0;
