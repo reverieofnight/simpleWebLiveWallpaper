@@ -199,16 +199,14 @@ let rainTimer = '';
 function initRain(){
   raining = true;
   if(rainTimer){
-    clearInterval(rainTimer);
+    clearTimeout(rainTimer);
   }
-  rainTimer = setInterval(() => {
-    genRain();
-  },50)
+  genRain();
 }
 function stopRain(){
   raining = false;
   if(rainTimer){
-    clearInterval(rainTimer);
+    clearTimeout(rainTimer);
   }
 }
 function genRain(){
@@ -243,6 +241,11 @@ function genRain(){
   //如果绘画已经停止，重新启动绘画
   if(rainArr.length === num){
     requestAnimationFrame(drawRain);
+  }
+  if(raining){
+    rainTimer = setTimeout(() => {
+      genRain();
+    }, 50)
   }
 }
 let last = '';
