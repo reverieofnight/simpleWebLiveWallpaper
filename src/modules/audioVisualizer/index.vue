@@ -108,7 +108,7 @@ function wallpaperAudioListener(audioArray){
     currentData = new Array(128).fill(0);
   }
   //如果音乐停止了，来音乐了，立即播放
-  if(playing.value === false && audioArray.some(value => value !== 0)){
+  if(playing.value === false && audioArray && audioArray.some(value => value !== 0)){
     playing.value = true;
     nextTick(() => {
       drawInit(); 

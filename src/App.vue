@@ -179,9 +179,9 @@ onMounted(() => {
     //背景类型为幻灯片
     store.bgSet.backgroundType = 'slide';
     //持续时间
-    store.bgSet.duration = 0.1 * 1000 * 60;
+    store.bgSet.duration = 1 * 1000 * 60;
     //切换效果
-    store.bgSet.switchAnimation = 'moveToBack';
+    store.bgSet.switchAnimation = 'random';
     //文件目录
     store.bgSet.fileDirectory = 'fileDirectory';
     // 视频音量
@@ -191,7 +191,7 @@ onMounted(() => {
     store.clockSet.showClock = true;
     clockModuleRef.value.init();
     //显示天气
-    // store.weatherSet.cityCode = '110000';//北京市
+    store.weatherSet.cityCode = '320281';//江阴市
     //apiKey
     store.weatherSet.apiKey = 'c7fee6c6ae63763b4d8529c9a8589c83';
     weatherModuleRef.value.init();
@@ -199,7 +199,7 @@ onMounted(() => {
     store.visSet.audioVisualizer = true;
     store.visSet.enableBar = true;
     store.visSet.enableCircle = true;
-    store.visSet.showFPS = showFPS;
+    store.visSet.showFPS = true;
     audioVisualizerModuleRef.value.init();
     //设置fps
     store.fpsLimit = 165;
