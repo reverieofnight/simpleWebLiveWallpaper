@@ -2,7 +2,7 @@
 	<div class="background-layer" v-show="showBackground">
 		<img class="static" v-show="backgroundType === 'static'" :src="filePath"></img>
 		<div class="slide" v-show="backgroundType === 'slide'">
-			 <div class="prev-image" ref="preRef" :style="{backgroundImage:'url(' + prevSrc + ')'}"></div>
+			 <div class="prev-image" ref="preRef" :style="{backgroundImage:'url(' + prevSrc + ')',backgroundColor:prevSrc ? 'transparent' : 'black'}"></div>
 			 <div class="next-image" ref="nextRef" :style="{backgroundImage:'url(' + nextSrc + ')'}"></div>
 			 <div class="current-image" ref="currentRef" :style="{backgroundImage:'url(' + currentSrc + ')'}"></div>
 		</div>
@@ -22,8 +22,8 @@ const showBackground = computed(() => store.bgSet.showBackground)
 const fpsLimit = computed(() => store.fpsLimit)
 const switchAnimation = computed(() => store.bgSet.switchAnimation)
 const videoVolume = computed(() => store.bgSet.videoVolume)
-const picsList = [];
-// import picsList from '../../../samples/backgroundImages';
+// const picsList = [];
+import picsList from '../../../samples/backgroundImages';
 const prevSrc = ref('');
 const nextSrc = ref('');
 const currentSrc = ref('');
