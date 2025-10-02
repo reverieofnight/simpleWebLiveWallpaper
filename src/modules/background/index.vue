@@ -22,8 +22,8 @@ const showBackground = computed(() => store.bgSet.showBackground)
 const fpsLimit = computed(() => store.fpsLimit)
 const switchAnimation = computed(() => store.bgSet.switchAnimation)
 const videoVolume = computed(() => store.bgSet.videoVolume)
-// const picsList = [];
-import picsList from '../../../samples/backgroundImages';
+const picsList = [];
+// import picsList from '../../../samples/backgroundImages';
 const prevSrc = ref('');
 const nextSrc = ref('');
 const currentSrc = ref('');
