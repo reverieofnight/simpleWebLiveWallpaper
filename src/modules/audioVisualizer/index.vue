@@ -9,11 +9,8 @@
 import { onMounted, computed,ref, watch, nextTick } from 'vue';
 import { useStore } from '@/pinia';
 import emitter from '@/utils/mitt';
-// let audioArraySample = [];
-// for(let i = 0; i < 128;i++){
-//   audioArraySample.push(0);
-// }
-import audioArraySample from '../../../samples/audioArraySample';
+let audioArraySample = new Array(128).fill(0);
+// import audioArraySample from '../../../samples/audioArraySample';
 const store = useStore();
 const fpsLimit = computed(() => store.fpsLimit);
 const enableBar = computed(() => store.visSet.enableBar);
@@ -106,7 +103,7 @@ function handleWindowResize(){
   centerY = windowHeight / 2;
 }
 watch(enableBar,(val) => {
-  if(!barAniId && val){
+  if(!barAniId && val && playing.value){
     if(!drawAniId){
       drawInit();
     }
@@ -117,7 +114,7 @@ watch(enableBar,(val) => {
   }
 })
 watch(enableCircle,(val) => {
-  if(!circleAniId && val){
+  if(!circleAniId && val && playing.value){
     if(!drawAniId){
       drawInit();
     }
@@ -310,8 +307,8 @@ function drawCircleInit(){
   let lastRenderTime = 0;
   let renderNum = 0;
   let dt = 0;// 帧时间差：记录相邻两帧之间的时间间隔，单位为秒，用于确保动画在不同帧率下表现一致
-  //定义透明度变量，初始值为 1
-  let alpha = 1;
+  //定义透明度变量，初始值为 0
+  let alpha = 0;
   //定义透明度变化速度
   const alphaDecreaseSpeed = 0.5;
   // 定义基础半径
@@ -384,7 +381,7 @@ function drawCircleInit(){
       // playing.value = false; // 设置播放状态为 false
       // 逐渐降低透明度
       alpha = Math.max(alpha - alphaDecreaseSpeed * dt, 0);
-    } else {
+    } else if(alpha < 1) {
       // 有声音时恢复透明度
       alpha = Math.min(alpha + alphaDecreaseSpeed * dt, 1);
     }
