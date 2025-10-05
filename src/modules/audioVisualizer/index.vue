@@ -186,7 +186,7 @@ function drawInit(){
   let fps = 0;
   let lastRenderTime = 0;
   let renderNum = 0;
-  let transitionSpeed = 33.3;
+  let refreshRate = 30;// 音频刷新率，即每秒产生多少次变化，wallpaper Engine 每秒发送30次频谱数据，所以这里设置为30最为合适。
   let dt = 0;// 帧时间差：记录相邻两帧之间的时间间隔，单位为秒，用于确保动画在不同帧率下表现一致
   drawAniId = requestAnimationFrame(draw);
   function draw(){
@@ -218,8 +218,7 @@ function drawInit(){
       let expect = expectData[i];
       let current = currentData[i];
       let dh = expect - current;
-      // 使用dt计算步长，确保动画在不同帧率下表现一致
-      let step = dh * transitionSpeed / fpsLimit.value;
+      let step = dh * refreshRate / fpsLimit.value;
       if(Math.abs(step) >= Math.abs(dh)){
         step = dh;
       }
