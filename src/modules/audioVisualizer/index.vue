@@ -219,7 +219,7 @@ function drawInit(){
       let current = currentData[i];
       let dh = expect - current;
       // 使用dt计算步长，确保动画在不同帧率下表现一致
-      let step = dh * transitionSpeed * dt;
+      let step = dh * transitionSpeed / fpsLimit.value;
       if(Math.abs(step) >= Math.abs(dh)){
         step = dh;
       }
@@ -249,7 +249,7 @@ function drawBarInit(){
   let fps = 0;
   let lastRenderTime = 0;
   let renderNum = 0;
-  let dt = 0;// 帧时间差：记录相邻两帧之间的时间间隔，单位为秒，用于确保动画在不同帧率下表现一致
+  let dt = 0;// 帧时间差：记录相邻两帧之间的时间间隔,与屏幕刷新率有关，与fps限制无关
   barAniId = requestAnimationFrame(drawBars);
   function drawBars(){
     if(!last){
@@ -390,10 +390,10 @@ function drawCircleInit(){
     if (isAllZero && alpha > 0 && !playing.value) {
       // playing.value = false; // 设置播放状态为 false
       // 逐渐降低透明度
-      alpha = Math.max(alpha - alphaDecreaseSpeed * dt, 0);
+      alpha = Math.max(alpha - alphaDecreaseSpeed / fpsLimit.value, 0);
     } else if(alpha < 1 && playing.value) {
       // 有声音时恢复透明度
-      alpha = Math.min(alpha + alphaDecreaseSpeed * dt, 1);
+      alpha = Math.min(alpha + alphaDecreaseSpeed / fpsLimit.value, 1);
     }
     if(playing.value || (enableCircle.value && alpha > 0)){
       circleAniId = requestAnimationFrame(drawCircle);

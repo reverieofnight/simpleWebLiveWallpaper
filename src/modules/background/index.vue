@@ -219,8 +219,11 @@ async function switchBackgroundImage() {
 			let time = wallpaper.time;
 			if(now - time < duration.value){
 				await preloadImage(wallpaper.filePath);
+				if(nextBackSrc){
+					preBackSrc = nextBackSrc;
+				}
 				nextBackSrc = wallpaper.filePath;
-				handler(wallpaper.filePath);
+				handler();
 			} else {
 				await getWallpaperFilePath();
 			}
@@ -242,11 +245,9 @@ async function switchBackgroundImage() {
 						saveWallpaperFileInfo(filePath);
 						if(nextBackSrc){
 							preBackSrc = nextBackSrc;
-							nextBackSrc = filePath;
-						} else {
-							nextBackSrc = filePath;
 						}
-						handler(filePath);
+						nextBackSrc = filePath;
+						handler();
 					} else {
 						console.log('未获取到壁纸文件！');
 					}
@@ -262,11 +263,9 @@ async function switchBackgroundImage() {
 				saveWallpaperFileInfo(filePath);
 				if(nextBackSrc){
 					preBackSrc = nextBackSrc;
-					nextBackSrc = filePath;
-				} else {
-					nextBackSrc = filePath;
 				}
-				handler(filePath);
+				nextBackSrc = filePath;
+				handler();
 			} else {
 				console.log('未检测到壁纸文件！');
 			}
@@ -290,7 +289,7 @@ async function switchBackgroundImage() {
 	}
 	
 
-	function handler(filePath) {
+	function handler() {
 		//绘制动画过程
 		let last = '';
 		let fpsThreshold = 0;
