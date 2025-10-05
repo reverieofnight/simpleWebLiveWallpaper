@@ -21,7 +21,7 @@ let audioSimulatorTimer = '';
 let resizeHandler = null;
 let currentData = new Array(128).fill(0);
 let expectData = new Array(128).fill(0);
-const playing = ref(false);
+const playing = ref(false);//是否正在播放
 let stopReceive = false;
 let fpsThresholdMin = 1 / fpsLimit.value;
 let drawAniId = '';
@@ -37,9 +37,9 @@ function init(){
     initTimer = null;//清除定时器标识
     console.log('初始化音频可视化层');
     //清空正在播放的数据
-    currentData = new Array(128).fill(0);
+    currentData.fill(0);
     //清空预期数据
-    expectData = new Array(128).fill(0);
+    expectData.fill(0);
     playing.value = false;
     stopReceive = false;
     isInit = true;
@@ -158,6 +158,7 @@ function wallpaperAudioListener(audioArray){
         let reallyStop = currentData.every(value => value === 0) && audioArray.every(value => value === 0);
         if(reallyStop){
           playing.value = false;
+          expectData.fill(0);
           console.log('音乐停止');
         } else {
           expectData = handlerAudioArray(audioArray);
@@ -228,8 +229,12 @@ function drawInit(){
       }
       currentData[i] = nextData;
     }
-    if(playing.value && (enableBar.value || enableCircle.value)){
-      drawAniId = requestAnimationFrame(draw);
+    if(enableBar.value || enableCircle.value){
+      if(playing.value || !currentData.every(value => value === 0)){
+        drawAniId = requestAnimationFrame(draw);
+      } else {
+        drawAniId = '';
+      }
     } else {
       drawAniId = '';
     }
@@ -309,6 +314,7 @@ function drawCircleInit(){
   let dt = 0;// 帧时间差：记录相邻两帧之间的时间间隔，单位为秒，用于确保动画在不同帧率下表现一致
   //定义透明度变量，初始值为 0
   let alpha = 0;
+  let isAllZero = false;
   //定义透明度变化速度
   const alphaDecreaseSpeed = 0.5;
   // 定义基础半径
@@ -375,13 +381,17 @@ function drawCircleInit(){
     // 闭合路径
     cctx.closePath();
     cctx.stroke();// 绘制路径
-    // 检查 currentData 是否全部为 0
-    let isAllZero = currentData.every(value => value === 0) && expectData.every(value => value === 0);
-    if (isAllZero) {
+    if(!playing.value){
+      // 检查 currentData 是否全部为 0
+      isAllZero = currentData.every(value => value === 0);
+    } else if(isAllZero){
+      isAllZero = false;
+    }
+    if (isAllZero && alpha > 0 && !playing.value) {
       // playing.value = false; // 设置播放状态为 false
       // 逐渐降低透明度
       alpha = Math.max(alpha - alphaDecreaseSpeed * dt, 0);
-    } else if(alpha < 1) {
+    } else if(alpha < 1 && playing.value) {
       // 有声音时恢复透明度
       alpha = Math.min(alpha + alphaDecreaseSpeed * dt, 1);
     }
