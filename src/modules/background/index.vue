@@ -2,9 +2,9 @@
 	<div class="background-layer" v-show="showBackground">
 		<img class="static" v-show="backgroundType === 'static'" :src="filePath"></img>
 		<div class="slide" v-show="backgroundType === 'slide'">
-			 <div class="prev-image" ref="preRef" :style="{backgroundImage:'url(' + prevSrc + ')',backgroundColor:prevSrc ? 'transparent' : 'black'}"></div>
-			 <div class="next-image" ref="nextRef" :style="{backgroundImage:'url(' + nextSrc + ')'}"></div>
-			 <div class="current-image" ref="currentRef" :style="{backgroundImage:'url(' + currentSrc + ')'}"></div>
+			<img class="prev-image" ref="preRef" :src="prevSrc" alt="之前壁纸">
+			<img class="next-image" ref="nextRef" :src="nextSrc" alt="之后壁纸">
+			<img class="current-image" ref="currentRef" :src="currentSrc" alt="当前壁纸">
 		</div>
 		 <div id="videoContainer" v-show="backgroundType === 'video'"></div>
 	</div>
