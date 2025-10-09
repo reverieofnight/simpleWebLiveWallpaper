@@ -511,7 +511,7 @@ img[src=""],img:not([src]){
 .current-image {
 	width: 100%;
 	height: 100%;
-	background-size: cover;
+	object-fit: cover;
 	position: absolute;
 	transform: translate3d(0,0,0);
 }
