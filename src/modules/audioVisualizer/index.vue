@@ -316,8 +316,8 @@ function drawCircleInit(){
   let isAllZero = false;
   //定义透明度变化速度
   const alphaDecreaseSpeed = 0.5;
-  // 定义基础半径
-  const baseRadius = windowHeight / 4; // 固定基础半径为 500px
+  // 基础半径比例（相对于窗口短边）
+  const baseRadiusRatio = 0.25;
   //条形数量
   const barCount = currentData.length;
   // 定义角度步长
@@ -355,7 +355,9 @@ function drawCircleInit(){
         } 
       }
     }
-    // 绘制圆形音频bars
+    // 绘制圆形音频bars（平滑曲线）
+    // 根据当前窗口尺寸动态计算基础半径
+    const baseRadius = Math.min(windowWidth, windowHeight) * baseRadiusRatio;
     // 设置线条样式，应用透明度
     cctx.clearRect(0,0,windowWidth,windowHeight);
     cctx.strokeStyle = `rgba(255,255,255,${alpha * 0.7})`;
@@ -364,22 +366,49 @@ function drawCircleInit(){
     cctx.shadowBlur = 5;
     cctx.shadowOffsetX = 2;
     cctx.shadowOffsetY = 2;
-    cctx.beginPath();// 开始绘制路径
+
+    // 先计算所有点坐标
+    const points = new Array(barCount);
     for (let i = 0; i < barCount; i++) {
       // 增大音频数据对半径偏移量的影响，增强反应强度
       const offset = currentData[i] * 150;
       const radius = baseRadius + offset;
       const x = centerX + radius * cosCache[i];
       const y = centerY + radius * sinCache[i];
-      if (i === 0) {
-        cctx.moveTo(x, y);
-      } else {
-        cctx.lineTo(x, y);
-      }
+      points[i] = { x, y };
     }
-    // 闭合路径
-    cctx.closePath();
-    cctx.stroke();// 绘制路径
+
+    if (points.length > 1) {
+      // 使用 Catmull-Rom 样条 + 贝塞尔曲线绘制闭合平滑曲线
+      const len = points.length;
+      const getPoint = (index) => {
+        const i = (index + len) % len;
+        return points[i];
+      };
+
+      cctx.beginPath();
+      // 起点
+      const p1 = getPoint(0);
+      cctx.moveTo(p1.x, p1.y);
+
+      for (let i = 0; i < len; i++) {
+        const p0 = getPoint(i - 1);
+        const p1 = getPoint(i);
+        const p2 = getPoint(i + 1);
+        const p3 = getPoint(i + 2);
+
+        // Catmull-Rom to Bezier 控制点
+        const cp1x = p1.x + (p2.x - p0.x) / 6;
+        const cp1y = p1.y + (p2.y - p0.y) / 6;
+        const cp2x = p2.x - (p3.x - p1.x) / 6;
+        const cp2y = p2.y - (p3.y - p1.y) / 6;
+
+        cctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2.x, p2.y);
+      }
+
+      cctx.closePath();
+      cctx.stroke();// 绘制路径
+    }
     if(!playing.value){
       // 检查 currentData 是否全部为 0
       isAllZero = currentData.every(value => value === 0);
