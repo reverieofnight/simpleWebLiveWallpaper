@@ -1,6 +1,6 @@
 {
 	"contentrating" : "Everyone",
-	"description" : "天气apiKey申请\r\nhttps://lbs.amap.com/api/webservice/create-project-and-key",
+	"description" : "# 简单动态壁纸 - 功能说明\r\n\r\n## 基本功能\r\n这是一个网页动态壁纸应用，可以把你的桌面背景变得生动有趣。\r\n\r\n## 主要特点\r\n\r\n### 壁纸类型\r\n- **静态图片**：显示单张图片作为背景\r\n- **幻灯片**：自动切换多张图片，可以设置切换时间\r\n- **视频背景**：播放视频作为壁纸，可以调节音量\r\n\r\n### 切换效果\r\n- 淡入淡出\r\n- 左右滑动  \r\n- 3D立体效果\r\n- 随机效果\r\n\r\n### 实用功能\r\n- **时钟显示**：大字体显示时间、日期、星期\r\n- **天气信息**：显示当地天气、温度、湿度\r\n- **下雨效果**：实际下雨时桌面会显示雨滴动画\r\n- **音频可视化**：播放音乐时显示频谱效果\r\n\r\n## 技术特点\r\n- 性能优化，不会卡顿电脑\r\n- 支持高分辨率屏幕\r\n- 可以自定义各种设置\r\n\r\n## 使用方法\r\n1. 选择喜欢的壁纸类型\r\n2. 设置显示哪些功能（时钟、天气等）\r\n3. 调整参数到满意状态\r\n4. 享受动态桌面\r\n\r\n这个壁纸简单实用，既能美化桌面，又能提供实用的时间天气信息。\r\n        \r\n天气apiKey申请\r\nhttps://lbs.amap.com/api/webservice/create-project-and-key",
 	"file" : "index.html",
 	"general" : 
 	{
@@ -268,9 +268,9 @@
 	"ratingsex" : "none",
 	"ratingviolence" : "none",
 	"tags" : [ "Music" ],
-	"title" : "simpleWebLiveWallpaper",
-	"type" : "Web",
-	"version" : 46,
+	"title" : "幻境",
+	"type" : "web",
+	"version" : 47,
 	"visibility" : "public",
 	"workshopid" : "3277017252",
 	"workshopurl" : "steam://url/CommunityFilePage/3277017252"
