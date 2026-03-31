@@ -10,6 +10,7 @@ const iconNameList = {
   '霾':'502',
   '未知':'999',
 }
+
 export const weatherMergeList = {
   '风': ['有风', '平静', '微风', '和风', '清风', '强风/劲风', '疾风', '大风', '烈风', '风暴', '狂爆风', '飓风', '热带风暴', '龙卷风'],
   '多云': ['少云', '晴间多云', '多云'],
@@ -22,25 +23,20 @@ export const weatherMergeList = {
   '霾':['霾', '中度霾', '重度霾', '严重霾'],
   '未知':['未知']
 }
-export function weatherToIcon (weather){
-  let name = '';
-  Object.keys(weatherMergeList).forEach((key) => {
-    weatherMergeList[key].forEach((i) => {
-      if(weather === i){
-        name = key;
-      }
-    })
+
+// 构建快速查找映射
+const weatherMap = new Map()
+Object.keys(weatherMergeList).forEach(type => {
+  weatherMergeList[type].forEach(desc => {
+    weatherMap.set(desc, type)
   })
-  return iconNameList[name];
+})
+
+export function weatherToIcon(weather) {
+  const type = weatherMap.get(weather) || '未知'
+  return iconNameList[type]
 }
-export function weatherMerge(weather){
-  let name = '';
-  Object.keys(weatherMergeList).forEach((key) => {
-    weatherMergeList[key].forEach((i) => {
-      if(weather === i){
-        name = key;
-      }
-    })
-  })
-  return name;
+
+export function weatherMerge(weather) {
+  return weatherMap.get(weather) || '未知'
 }
