@@ -4,8 +4,9 @@
     <audioVisualizerModule ref="audioVisualizerModuleRef" />
     <weatherModule ref="weatherModuleRef" />
     <clockModule ref="clockModuleRef" />
-    <div class="control-panel" v-if="backgroundType === 'slide'">
-      <button class="button" @click="handleClickNext">下一张</button>
+    <div class="control-panel" >
+      <button v-if="backgroundType === 'slide'" class="button" @click="handleClickNext">下一张</button>
+      <button v-if="showWeather" class="button" @click="handleUpdateWeather">更新天气</button>
     </div>
   </div>
 </template>
@@ -24,7 +25,8 @@ const clockModuleRef = ref();
 const weatherModuleRef = ref();
 const audioVisualizerModuleRef = ref();
 const store = useStore();
-const backgroundType = computed(() => store.bgSet.backgroundType)
+const backgroundType = computed(() => store.bgSet.backgroundType);
+const showWeather = computed(() => store.weatherSet.showWeather);
 onMounted(() => {
   console.log('store',store);
   console.log('环境',process.env.NODE_ENV );
@@ -191,6 +193,7 @@ onMounted(() => {
     store.clockSet.showClock = true;
     clockModuleRef.value.init();
     //显示天气
+    store.weatherSet.showWeather = true;
     store.weatherSet.cityCode = '320281';//江阴市
     //apiKey
     store.weatherSet.apiKey = 'c7fee6c6ae63763b4d8529c9a8589c83';
@@ -212,6 +215,10 @@ onMounted(() => {
 
 function handleClickNext(){
   backgroundModuleRef.value.handleClickNext();
+}
+//更新天气
+function handleUpdateWeather(){
+  weatherModuleRef.value.getWeather();
 }
 
 </script>
@@ -241,14 +248,9 @@ function handleClickNext(){
   .control-panel{
     padding:20px;
     position: absolute;
-    right:5%;
+    right:0%;
     top:20%;
     z-index: 999;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-    &:hover{
-      opacity: 1; 
-    }
     .button{
       padding:10px 20px;
       margin:10px;
@@ -261,7 +263,11 @@ function handleClickNext(){
       border:1px solid white;
       border-radius: 10px;
       box-shadow: 0 0 20px rgba(0,0,0,0.4);
-      opacity: 0.7;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+      &:hover{
+        opacity: 1;
+      }
     }
     
   }

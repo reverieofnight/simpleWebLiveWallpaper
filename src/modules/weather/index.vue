@@ -308,7 +308,8 @@ function destroy(){
 }
 defineExpose({
   init,
-  destroy
+  destroy,
+  getWeather
 })
 </script>
 
@@ -369,6 +370,7 @@ defineExpose({
   #rain-canvas{
     position: absolute;
   }
+  
 }
 
 

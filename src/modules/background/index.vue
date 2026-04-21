@@ -31,19 +31,13 @@ let preBackSrc = '';
 let nextBackSrc = '';
 let player = null;
 let playerContainer = null;
-let initTimer = '';//初始化防抖定时器
 let firstIn = true;
 let switchAniId = '';//切换动画id
 function init() {
-	if(initTimer){
-		clearTimeout(initTimer);
+	console.log('初始化背景层');
+	if(backgroundType.value === 'slide'){
+		initSlide();
 	}
-	initTimer = setTimeout(() => {
-		console.log('初始化背景层');
-		if(backgroundType.value === 'slide'){
-			initSlide();
-		}
-	},100)
 	
 }
 function destroy() {
