@@ -1,9 +1,9 @@
 <template>
   <div class="view-container">
+    <clockModule ref="clockModuleRef" :base="clockBaseWidth" :style="{transform:'translate3d(-50%,-'+ clockBaseWidth * 6 + 'px,0)'}" />
     <backgroundModule ref="backgroundModuleRef" />
     <audioVisualizerModule ref="audioVisualizerModuleRef" />
     <weatherModule ref="weatherModuleRef" />
-    <clockModule ref="clockModuleRef" />
     <div class="control-panel" >
       <button v-if="backgroundType === 'slide'" class="button" @click="handleClickNext">下一张</button>
       <button v-if="showWeather" class="button" @click="handleUpdateWeather">更新天气</button>
@@ -27,9 +27,11 @@ const audioVisualizerModuleRef = ref();
 const store = useStore();
 const backgroundType = computed(() => store.bgSet.backgroundType);
 const showWeather = computed(() => store.weatherSet.showWeather);
+let clockBaseWidth = ref(0);
 onMounted(() => {
   console.log('store',store);
   console.log('环境',process.env.NODE_ENV );
+  clockBaseWidth.value = window.innerWidth * 0.01;
   if(process.env.NODE_ENV === 'production'){
      //监听用户属性改变
      //持续时间改变防抖
@@ -210,6 +212,7 @@ onMounted(() => {
   }
   window.onresize = () => {
     emitter.emit('windowResize');
+    clockBaseWidth.value = window.innerWidth * 0.01;
   }
 })
 
@@ -235,8 +238,7 @@ function handleUpdateWeather(){
   background-color: black;
   .background-layer,
   .weather-layer,
-  .audio-visualizer-layer,
-  .clock-layer
+  .audio-visualizer-layer
   {
     width: 100%;
     height:100%;
@@ -244,6 +246,13 @@ function handleUpdateWeather(){
     position: absolute;
     z-index: 0;
     transform: translate3d(0,0,0);
+  }
+  .clock-layer{
+    z-index: 1;
+    position: absolute;
+    transform: translate3d(0,0,0);
+    left:50%;
+    top:50%;
   }
   .control-panel{
     padding:20px;

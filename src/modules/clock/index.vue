@@ -1,28 +1,28 @@
 <template>
   <div v-show="showLayer" class="clock-layer">
     <div class="clock-wrapper">
-      <div class="clock">
+      <div class="clock" :style="{fontSize:base * 12 + 'px'}">
         <div class="hour">
-          <span class="bit">{{ time.hour.slice(0,1) }}</span>
-          <span class="bit">{{ time.hour.slice(1,2) }}</span>
+          <span class="bit" :style="{width:base * 6 + 'px'}">{{ time.hour.slice(0,1) }}</span>
+          <span class="bit" :style="{width:base * 6 + 'px'}">{{ time.hour.slice(1,2) }}</span>
         </div>
         <div class="dot" :class="dotActive && 'active'">:</div>
         <div class="minute">
-          <span class="bit">{{ time.minute.slice(0,1) }}</span>
-          <span class="bit">{{ time.minute.slice(1,2) }}</span>
+          <span class="bit" :style="{width:base * 6 + 'px'}">{{ time.minute.slice(0,1) }}</span>
+          <span class="bit" :style="{width:base * 6 + 'px'}">{{ time.minute.slice(1,2) }}</span>
         </div>
         <div class="dot" :class="dotActive && 'active'">:</div>
         <div class="second">
-          <span class="bit">{{ time.second.slice(0,1) }}</span>
-          <span class="bit">{{ time.second.slice(1,2) }}</span>
+          <span class="bit" :style="{width:base * 6 + 'px'}">{{ time.second.slice(0,1) }}</span>
+          <span class="bit" :style="{width:base * 6 + 'px'}">{{ time.second.slice(1,2) }}</span>
         </div>
       </div>
-      <div class="date">
+      <div class="date" :style="{fontSize:base * 4 + 'px'}">
         <span>{{ time.month }},</span>
         <span>{{ time.day }},</span>
         <span>{{ time.weekday }}</span>
       </div>
-      <div class="year">
+      <div class="year" :style="{fontSize:base * 4 + 'px'}">
         {{ time.year }}
       </div>
     </div>
@@ -33,6 +33,14 @@
 import { ref,reactive } from 'vue';
 import dayjs from 'dayjs';
 import translate from '@/translate/clock';
+const props = defineProps({
+  // 时钟基础宽度
+  base: {
+    type: Number,
+    default: 0
+  }
+})
+
 const time = reactive({
   year:'',
   month:'',
@@ -85,10 +93,6 @@ defineExpose({
 
 <style lang="less" scoped>
 .clock-wrapper{
-  position: absolute;
-  left:50%;
-  top:50%;
-  transform: translate3d(-50%, -150px, 0);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -96,8 +100,6 @@ defineExpose({
   color:white;
   text-shadow: 0 0 10px rgba(0,0,0,0.3);
   .clock{
-    width: 1030px;
-    font-size: 300px;
     display: flex;
     .hour{
       flex-shrink: 0;
@@ -110,23 +112,15 @@ defineExpose({
     }
     .bit{
       display: inline-block;
-      width:150px;
       text-align: end;
     }
     .dot{
-      width:75px;
       opacity: 0.4;
       transform: translateY(-5%);
     }
     .dot.active{
       opacity: 1;
     }
-  }
-  .date{
-    font-size: 100px;
-  }
-  .year{
-    font-size: 100px;
   }
 }
 </style>
