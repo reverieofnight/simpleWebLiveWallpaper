@@ -130,9 +130,31 @@ function slide(){
 	preRef.value.addEventListener('transitionend', onTransitionEnd, { once: true });
 	nextRef.value.addEventListener('transitionend', onTransitionEnd, { once: true });
 }
+/** 缩放淡出：旧图放大并淡出，新图直接显示 */
+function zoomOut(){
+	const duration = 1;
+	prevSrc.value = preBackSrc;
+	nextSrc.value = nextBackSrc;
+	currentSrc.value = nextBackSrc;
+
+	nextRef.value.style.transition = 'none';
+	nextRef.value.style.transform = '';
+	nextRef.value.style.opacity = '1';
+	preRef.value.style.transition = 'none';
+	preRef.value.style.transform = '';
+	preRef.value.style.opacity = '1';
+	void preRef.value.offsetHeight;
+
+	preRef.value.style.transition = `opacity ${duration}s ease, transform ${duration}s ease`;
+	preRef.value.style.transform = 'scale(1.15)';
+	preRef.value.style.opacity = '0';
+
+	switchCleanup = onTransitionEnd;
+	preRef.value.addEventListener('transitionend', onTransitionEnd, { once: true });
+}
 /** 随机选择一种动画效果执行 */
 function random(){
-	let animationList = ['fade','slide'];
+	let animationList = ['fade','slide','zoomOut'];
 	let index = Math.round((animationList.length - 1) * Math.random());
 	chooseAnimation(animationList[index]);
 }
@@ -144,6 +166,9 @@ function chooseAnimation(value){
 			break;
 		case 'slide':
 			slide();
+			break;
+		case 'zoomOut':
+			zoomOut();
 			break;
 		case 'random':
 			random();

@@ -28,6 +28,7 @@
 				"ui_static" : "static",
 				"ui_switchAnimation" : "switchAnimation",
 				"ui_video" : "video",
+				"ui_zoomOutAnimation" : "zoom out",
 				"ui_videoFilePath" : "video Path",
 				"ui_videoVolume" : "video Volume"
 			},
@@ -53,6 +54,7 @@
 				"ui_static" : "静态背景",
 				"ui_switchAnimation" : "切换动画效果",
 				"ui_video" : "视频",
+				"ui_zoomOutAnimation" : "缩放淡出",
 				"ui_videoFilePath" : "视频路径",
 				"ui_videoVolume" : "视频音量"
 			}
@@ -220,6 +222,10 @@
 					{
 						"label" : "ui_slideAnimation",
 						"value" : "slide"
+					},
+					{
+						"label" : "ui_zoomOutAnimation",
+						"value" : "zoomOut"
 					},
 					{
 						"label" : "ui_randomAnimation",
