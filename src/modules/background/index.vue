@@ -319,7 +319,20 @@ async function switchBackgroundImage() {
 		nextRef.value.style.transition = '';
 
 		if(!currentSrc.value){
-			fade();
+			// 首次初始化，第一张图片从黑暗中淡入
+			if(preBackSrc){
+				prevSrc.value = preBackSrc;
+			}
+			nextSrc.value = nextBackSrc;
+			currentSrc.value = nextBackSrc;
+			currentRef.value.style.opacity = '0';
+			// 强制浏览器回流，让上面的 opacity=0 先生效，再设置 opacity=1 才能触发过渡动画
+			void currentRef.value.offsetHeight;
+			currentRef.value.style.transition = 'opacity 1s ease';
+			currentRef.value.style.opacity = '1';
+			currentRef.value.addEventListener('transitionend', () => {
+				currentRef.value.style.transition = '';
+			}, { once: true });
 			return;
 		}
 		nextTick(() => {
