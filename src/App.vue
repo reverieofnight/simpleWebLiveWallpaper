@@ -207,7 +207,7 @@ onMounted(() => {
     store.visSet.showFPS = true;
     audioVisualizerModuleRef.value.init();
     //设置fps
-    store.fpsLimit = 165;
+    store.fpsLimit = 160;
     console.log('帧数限制',store.fpsLimit);
   }
   window.onresize = () => {
