@@ -27,6 +27,7 @@
 				"ui_slide" : "slide",
 				"ui_slideLeftAnimation" : "slideLeft",
 				"ui_slideUpAnimation" : "slideUp",
+				"ui_coverAnimation" : "cover",
 				"ui_static" : "static",
 				"ui_switchAnimation" : "switchAnimation",
 				"ui_video" : "video",
@@ -55,6 +56,7 @@
 				"ui_slide" : "图片幻灯片",
 				"ui_slideLeftAnimation" : "向左滑动",
 				"ui_slideUpAnimation" : "上滑",
+				"ui_coverAnimation" : "覆盖",
 				"ui_static" : "静态背景",
 				"ui_switchAnimation" : "切换动画效果",
 				"ui_video" : "视频",
@@ -232,6 +234,10 @@
 						"value" : "slideUp"
 					},
 					{
+						"label" : "ui_coverAnimation",
+						"value" : "cover"
+					},
+					{
 						"label" : "ui_zoomOutAnimation",
 						"value" : "zoomOut"
 					},
@@ -282,7 +288,7 @@
 	"tags" : [ "Music" ],
 	"title" : "幻境",
 	"type" : "Web",
-	"version" : 57,
+	"version" : 58,
 	"visibility" : "public",
 	"workshopid" : "3277017252",
 	"workshopurl" : "steam://url/CommunityFilePage/3277017252"
