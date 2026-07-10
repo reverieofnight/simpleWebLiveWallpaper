@@ -11,6 +11,7 @@
 				"ui_apiKey" : "api Key",
 				"ui_audioVisualizer" : "audio Visualizer",
 				"ui_backgroundType" : "background Type",
+				"ui_focusAnimation" : "focus",
 				"ui_cityCode" : "city Code",
 				"ui_enableBar" : "enable Bar",
 				"ui_enableCircle" : "enable Circle",
@@ -37,6 +38,7 @@
 				"ui_apiKey" : "天气查询Key(高德)",
 				"ui_audioVisualizer" : "音频可视化",
 				"ui_backgroundType" : "背景类型",
+				"ui_focusAnimation" : "对焦",
 				"ui_cityCode" : "城市编码",
 				"ui_enableBar" : "开启条形可视化",
 				"ui_enableCircle" : "开启圆形可视化",
@@ -228,6 +230,10 @@
 						"value" : "zoomOut"
 					},
 					{
+						"label" : "ui_focusAnimation",
+						"value" : "focus"
+					},
+					{
 						"label" : "ui_randomAnimation",
 						"value" : "random"
 					}
@@ -270,7 +276,7 @@
 	"tags" : [ "Music" ],
 	"title" : "幻境",
 	"type" : "Web",
-	"version" : 55,
+	"version" : 56,
 	"visibility" : "public",
 	"workshopid" : "3277017252",
 	"workshopurl" : "steam://url/CommunityFilePage/3277017252"

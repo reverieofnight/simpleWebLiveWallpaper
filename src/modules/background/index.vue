@@ -40,6 +40,9 @@ const currentRef = ref();
 const duration = computed(() => store.bgSet.duration)
 const fileDirectory = computed(() => store.bgSet.fileDirectory)
 
+/** 切换过渡时长（秒） */
+const DURATION = 1.5;
+
 // ==================== 辅助函数 ====================
 
 // 预加载图片
@@ -81,13 +84,14 @@ function onTransitionEnd() {
 	nextRef.value.style.transition = '';
 	preRef.value.style.transform = '';
 	nextRef.value.style.transform = '';
+	preRef.value.style.filter = '';
+	nextRef.value.style.filter = '';
 	preRef.value.style.opacity = '0';
 	nextRef.value.style.opacity = '0';
 	currentRef.value.style.opacity = '1';
 }
 /** 淡入淡出切换：旧图渐出、新图直接显示 */
 function fade(){
-	const duration = 1;
 	prevSrc.value = preBackSrc;
 	nextSrc.value = nextBackSrc;
 	currentSrc.value = nextBackSrc;
@@ -100,7 +104,7 @@ function fade(){
 	preRef.value.style.opacity = '1';
 	void preRef.value.offsetHeight;
 
-	preRef.value.style.transition = `opacity ${duration}s ease`;
+	preRef.value.style.transition = `opacity ${DURATION}s ease`;
 	preRef.value.style.opacity = '0';
 
 	switchCleanup = onTransitionEnd;
@@ -108,7 +112,6 @@ function fade(){
 }
 /** 滑动切换：新图从右侧滑入、旧图向左滑出 */
 function slide(){
-	const duration = 1.5;
 	prevSrc.value = preBackSrc;
 	nextSrc.value = nextBackSrc;
 	currentSrc.value = nextBackSrc;
@@ -121,8 +124,8 @@ function slide(){
 	nextRef.value.style.transform = 'translateX(100%)';
 	void preRef.value.offsetHeight;
 
-	preRef.value.style.transition = `transform ${duration}s ease`;
-	nextRef.value.style.transition = `transform ${duration}s ease`;
+	preRef.value.style.transition = `transform ${DURATION}s ease`;
+	nextRef.value.style.transition = `transform ${DURATION}s ease`;
 	preRef.value.style.transform = 'translateX(-100%)';
 	nextRef.value.style.transform = '';
 
@@ -132,7 +135,6 @@ function slide(){
 }
 /** 缩放淡出：旧图放大并淡出，新图直接显示 */
 function zoomOut(){
-	const duration = 1;
 	prevSrc.value = preBackSrc;
 	nextSrc.value = nextBackSrc;
 	currentSrc.value = nextBackSrc;
@@ -145,16 +147,41 @@ function zoomOut(){
 	preRef.value.style.opacity = '1';
 	void preRef.value.offsetHeight;
 
-	preRef.value.style.transition = `opacity ${duration}s ease, transform ${duration}s ease`;
+	preRef.value.style.transition = `opacity ${DURATION}s ease, transform ${DURATION}s ease`;
 	preRef.value.style.transform = 'scale(1.15)';
 	preRef.value.style.opacity = '0';
 
 	switchCleanup = onTransitionEnd;
 	preRef.value.addEventListener('transitionend', onTransitionEnd, { once: true });
 }
+/** 对焦过渡：旧图瞬间隐藏，新图从模糊渐变为清晰 */
+function focus(){
+	prevSrc.value = preBackSrc;
+	nextSrc.value = nextBackSrc;
+	currentSrc.value = nextBackSrc;
+
+	// 旧图立即隐藏
+	preRef.value.style.transition = 'none';
+	preRef.value.style.transform = '';
+	preRef.value.style.filter = '';
+	preRef.value.style.opacity = '0';
+	// 新图初始模糊
+	nextRef.value.style.transition = 'none';
+	nextRef.value.style.transform = '';
+	nextRef.value.style.filter = 'blur(8px)';
+	nextRef.value.style.opacity = '1';
+	void preRef.value.offsetHeight;
+
+	// 新图渐变为清晰
+	nextRef.value.style.transition = `filter ${DURATION}s ease`;
+	nextRef.value.style.filter = '';
+
+	switchCleanup = onTransitionEnd;
+	nextRef.value.addEventListener('transitionend', onTransitionEnd, { once: true });
+}
 /** 随机选择一种动画效果执行 */
 function random(){
-	let animationList = ['fade','slide','zoomOut'];
+	let animationList = ['fade','slide','zoomOut','focus'];
 	let index = Math.round((animationList.length - 1) * Math.random());
 	chooseAnimation(animationList[index]);
 }
@@ -169,6 +196,9 @@ function chooseAnimation(value){
 			break;
 		case 'zoomOut':
 			zoomOut();
+			break;
+		case 'focus':
+			focus();
 			break;
 		case 'random':
 			random();
@@ -193,6 +223,8 @@ function handler() {
 	nextRef.value.style.transition = 'none';
 	preRef.value.style.transform = '';
 	nextRef.value.style.transform = '';
+	preRef.value.style.filter = '';
+	nextRef.value.style.filter = '';
 	preRef.value.style.opacity = '0';
 	nextRef.value.style.opacity = '0';
 	void preRef.value.offsetHeight;
@@ -333,6 +365,9 @@ function destroySlide() {
 	preRef.value.style.opacity = '';
 	nextRef.value.style.opacity = '';
 	currentRef.value.style.opacity = '';
+	preRef.value.style.filter = '';
+	nextRef.value.style.filter = '';
+	currentRef.value.style.filter = '';
 	preRef.value.style.transition = '';
 	nextRef.value.style.transition = '';
 	currentRef.value.style.transition = '';
@@ -508,6 +543,8 @@ function handleSwitchAnimationChange(val) {
 	nextRef.value.style.transition = 'none';
 	preRef.value.style.transform = '';
 	nextRef.value.style.transform = '';
+	preRef.value.style.filter = '';
+	nextRef.value.style.filter = '';
 	preRef.value.style.opacity = '';
 	nextRef.value.style.opacity = '';
 	void preRef.value.offsetHeight;
