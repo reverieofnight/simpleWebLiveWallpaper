@@ -17,7 +17,6 @@
 				"ui_fadeAnimation" : "fade",
 				"ui_fileDirectory" : "file Directory",
 				"ui_filePath" : "file Path",
-				"ui_moveToBackAnimation" : "moveToBack",
 				"ui_picDuration" : "duration(min)",
 				"ui_randomAnimation" : "random",
 				"ui_showBackground" : "show Background",
@@ -43,7 +42,6 @@
 				"ui_fadeAnimation" : "渐入",
 				"ui_fileDirectory" : "文件夹路径",
 				"ui_filePath" : "文件路径",
-				"ui_moveToBackAnimation" : "抽取放大",
 				"ui_picDuration" : "持续时间(分钟)",
 				"ui_randomAnimation" : "随机",
 				"ui_showBackground" : "显示背景",
@@ -222,10 +220,6 @@
 					{
 						"label" : "ui_slideAnimation",
 						"value" : "slide"
-					},
-					{
-						"label" : "ui_moveToBackAnimation",
-						"value" : "moveToBack"
 					},
 					{
 						"label" : "ui_randomAnimation",
