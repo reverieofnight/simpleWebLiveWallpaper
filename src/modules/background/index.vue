@@ -508,6 +508,8 @@ img[src=""],img:not([src]){
 	object-fit: cover;
 	position: absolute;
 	transform: translate3d(0,0,0);
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
 }
 
 .slide {
