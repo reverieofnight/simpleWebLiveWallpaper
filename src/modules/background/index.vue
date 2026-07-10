@@ -19,11 +19,10 @@ const filePath = computed(() => store.bgSet.filePath)
 // const videoFilePath = new URL('../../../samples/GalaxyHome.mp4', import.meta.url);
 const videoFilePath = computed(() => store.bgSet.videoFilePath)
 const showBackground = computed(() => store.bgSet.showBackground)
-const fpsLimit = computed(() => store.fpsLimit)
 const switchAnimation = computed(() => store.bgSet.switchAnimation)
 const videoVolume = computed(() => store.bgSet.videoVolume)
-const picsList = [];
-// import picsList from '../../../samples/backgroundImages';
+// const picsList = [];
+import picsList from '../../../samples/backgroundImages';
 const prevSrc = ref('');
 const nextSrc = ref('');
 const currentSrc = ref('');
@@ -32,7 +31,8 @@ let nextBackSrc = '';
 let player = null;
 let playerContainer = null;
 let firstIn = true;
-let switchAniId = '';//切换动画id
+let switchTimer = null;
+let switchCleanup = null;
 function init() {
 	console.log('初始化背景层');
 	if(backgroundType.value === 'slide'){
@@ -124,11 +124,25 @@ onMounted(() => {
 		})
 		watch(switchAnimation,(val) => {
 			console.log('切换动画效果改变',val);
-			if(switchAniId){
-				cancelAnimationFrame(switchAniId);
+			// 立即重置过渡状态
+			if(switchTimer){
+				clearTimeout(switchTimer);
+				switchTimer = null;
 			}
-			preRef.value.style.transform = 'translate3d(0,0,0)';
-			nextRef.value.style.transform = 'translate3d(0,0,0)';
+			if(switchCleanup){
+				preRef.value?.removeEventListener('transitionend', switchCleanup);
+				nextRef.value?.removeEventListener('transitionend', switchCleanup);
+				switchCleanup = null;
+			}
+			preRef.value.style.transition = 'none';
+			nextRef.value.style.transition = 'none';
+			preRef.value.style.transform = '';
+			nextRef.value.style.transform = '';
+			preRef.value.style.opacity = '';
+			nextRef.value.style.opacity = '';
+			void preRef.value.offsetHeight;
+			preRef.value.style.transition = '';
+			nextRef.value.style.transition = '';
 			initSlide();
 		})
 })
@@ -284,25 +298,46 @@ async function switchBackgroundImage() {
 	
 
 	function handler() {
-		//绘制动画过程
-		let last = '';
-		let fpsThreshold = 0;
+		// 取消正在进行的动画、定时器和transitionend监听
+		if(switchTimer){
+			clearTimeout(switchTimer);
+			switchTimer = null;
+		}
+		if(switchCleanup){
+			preRef.value?.removeEventListener('transitionend', switchCleanup);
+			nextRef.value?.removeEventListener('transitionend', switchCleanup);
+			switchCleanup = null;
+		}
+		preRef.value.style.transition = 'none';
+		nextRef.value.style.transition = 'none';
+		preRef.value.style.transform = '';
+		nextRef.value.style.transform = '';
+		preRef.value.style.opacity = '0';
+		nextRef.value.style.opacity = '0';
+		void preRef.value.offsetHeight;
+		preRef.value.style.transition = '';
+		nextRef.value.style.transition = '';
+
 		if(!currentSrc.value){
 			fade();
 			return;
 		}
-		if(switchAniId){
-			cancelAnimationFrame(switchAniId);
+		nextTick(() => {
+			chooseAnimation(switchAnimation.value);
+		})
+
+		// 动画结束后的统一清理
+		const onTransitionEnd = () => {
+			switchCleanup = null;
+			switchTimer = null;
+			preRef.value.style.transition = '';
+			nextRef.value.style.transition = '';
+			preRef.value.style.transform = '';
+			nextRef.value.style.transform = '';
 			preRef.value.style.opacity = '0';
 			nextRef.value.style.opacity = '0';
-			preRef.value.style.transform = 'translate3d(0,0,0)';
-			nextRef.value.style.transform = 'translate3d(0,0,0)';
-			nextTick(() => {
-				chooseAnimation(switchAnimation.value);
-			})
-		} else {
-			chooseAnimation(switchAnimation.value);
-		}
+			currentRef.value.style.opacity = '1';
+		};
 
 		function chooseAnimation(value){
 			switch(value){
@@ -312,9 +347,6 @@ async function switchBackgroundImage() {
 				case 'slide':
 					slide();
 					break;
-				case 'moveToBack':
-					moveToBack();
-					break;
 				case 'random':
 					random();
 					break;
@@ -322,150 +354,53 @@ async function switchBackgroundImage() {
 					fade();
 			}
 		}
-		//检查帧率通过绘制,不通过就跳过
-		function fpsCheck(){
-			if(!last){
-				last = performance.now() / 1000;
-				return true;
-			} else {
-				let now = performance.now() / 1000;
-				let dt = Math.min(now - last,1);
-				last = now;
-				if(fpsLimit.value > 0){
-					fpsThreshold += dt;
-					if(fpsThreshold < 1.0 / fpsLimit.value){
-						return false;
-					} else {
-						fpsThreshold -= 1.0 / fpsLimit.value;
-						return true;
-					}
-				} else {
-					return true;
-				}
-			}
-		}
 		// 渐变效果
 		function fade(){
-			let opacity = 1;
+			const duration = 1;
 			prevSrc.value = preBackSrc;
-			preRef.value.style.opacity = opacity;
 			nextSrc.value = nextBackSrc;
-			nextRef.value.style.opacity = 1;
 			currentSrc.value = nextBackSrc;
-			switchAniId = requestAnimationFrame(draw);
-			function draw(){
-				if(!fpsCheck()){
-					switchAniId = requestAnimationFrame(draw);
-					return;
-				}
-				preRef.value.style.opacity = opacity;
-				if(opacity > 0){
-					opacity -= 0.01 * (60 / fpsLimit.value);
-					switchAniId = requestAnimationFrame(draw);
-				} else {
-					preRef.value.style.opacity = '0';
-					nextRef.value.style.opacity = '0';
-					currentRef.value.style.opacity = '1';
-				}
-			}
+
+			nextRef.value.style.transition = 'none';
+			nextRef.value.style.transform = '';
+			nextRef.value.style.opacity = '1';
+			preRef.value.style.transition = 'none';
+			preRef.value.style.transform = '';
+			preRef.value.style.opacity = '1';
+			void preRef.value.offsetHeight;
+
+			preRef.value.style.transition = `opacity ${duration}s ease`;
+			preRef.value.style.opacity = '0';
+
+			switchCleanup = onTransitionEnd;
+			preRef.value.addEventListener('transitionend', onTransitionEnd, { once: true });
 		}
 		//滑动效果
 		function slide(){
-			prevSrc.value = preBackSrc;
-			nextSrc.value = nextBackSrc;
-			preRef.value.style.opacity = '1';
-			nextRef.value.style.opacity = '1';
-			preRef.value.style.transform = 'translate3d(0,0,0)';
-			nextRef.value.style.transform = 'translate3d(100%,0,0)';
-			currentSrc.value = nextBackSrc;
-			let x = 0;
-			nextTick(() => {
-				switchAniId = requestAnimationFrame(draw);
-			})
-			function draw(){
-				if(!fpsCheck()){
-					switchAniId = requestAnimationFrame(draw);
-					return;	
-				}
-				if(x > -100){
-					preRef.value.style.transform = 'translate3d(' + x + '%,0,0)'
-					nextRef.value.style.transform = 'translate3d(' + (100 + x) + '%,0,0)'
-					x -= 1 * (60 / fpsLimit.value);
-					switchAniId = requestAnimationFrame(draw);
-				} else {
-					preRef.value.style.opacity = '0';
-					nextRef.value.style.opacity = '0';
-					currentRef.value.style.opacity = '1';
-					preRef.value.style.transform = 'translate3d(0,0,0)';
-					nextRef.value.style.transform = 'translate3d(0,0,0)';
-				}
-			}
-		}
-		//当前壁纸移动到后面，使后面的壁纸显示出来
-		function moveToBack(){
-			console.log('moveToBack');
-			console.log('preBackSrc',preBackSrc);
-			console.log('nextBackSrc',nextBackSrc);
-			
+			const duration = 1.5;
 			prevSrc.value = preBackSrc;
 			nextSrc.value = nextBackSrc;
 			currentSrc.value = nextBackSrc;
+
+			preRef.value.style.transition = 'none';
+			nextRef.value.style.transition = 'none';
 			preRef.value.style.opacity = '1';
 			nextRef.value.style.opacity = '1';
-			currentRef.value.style.opacity = '0';
-			let px = 0;
-			let pxx = 0;
-			let pscale = 0;
-			let nscalex = 0;
-			let nscale = -30;
-			let duration = 1;
-			nextRef.value.style.transform = `translate3d(0,0,${nscale}vw)`;
-			let first = true;
-			let second = false;
-			nextTick(() => {
-				switchAniId = requestAnimationFrame(draw);
-			})
-			function draw(){
-				if(!fpsCheck()){
-					switchAniId = requestAnimationFrame(draw);
-					return;	
-				}
-				// 前壁纸移动到后面
-				if(first && px < 100){
-					pxx += 100 / (fpsLimit.value * duration);
-					px = Math.sin(Math.PI * pxx / 200) * 100;
-					pscale -= 30 / (fpsLimit.value * duration);
-					preRef.value.style.transform = `translate3d(${px}%,0,${pscale}vw)`;
-					switchAniId = requestAnimationFrame(draw);
-				} else if(px >= 100){
-					px = 100;
-					first = false;
-					second = true;
-					switchAniId = requestAnimationFrame(draw);
-				}
-				// 后壁纸移动到前面
-				if(second && px > 0 && nscale < 0){
-					pxx -= 100 / (fpsLimit.value * duration);
-					px = Math.sin(Math.PI * pxx / 200) * 100;
-					nscalex += 30 / (fpsLimit.value * duration);
-					nscale = -30 + Math.sin(Math.PI * nscalex / 60) * 30;
-					preRef.value.style.transform = `translate3d(${px}%,0,${pscale}vw)`;
-					nextRef.value.style.transform = `translate3d(0,0,${nscale}vw)`;
-					switchAniId = requestAnimationFrame(draw);
-				} else if(second && nscale >= 0){
-					px = 0;
-					second = false;
-					nextRef.value.style.transform = `translate3d(0,0,0)`;
-					preRef.value.style.transform = `translate3d(0,0,0)`;
-					preRef.value.style.opacity = '0';
-					nextRef.value.style.opacity = '0';
-					currentRef.value.style.opacity = '1';
-				}
-				
-			}
+			preRef.value.style.transform = '';
+			nextRef.value.style.transform = 'translateX(100%)';
+			void preRef.value.offsetHeight;
+
+			preRef.value.style.transition = `transform ${duration}s ease`;
+			nextRef.value.style.transition = `transform ${duration}s ease`;
+			preRef.value.style.transform = 'translateX(-100%)';
+			nextRef.value.style.transform = '';
+
+			switchCleanup = onTransitionEnd;
+			preRef.value.addEventListener('transitionend', onTransitionEnd, { once: true });
+			nextRef.value.addEventListener('transitionend', onTransitionEnd, { once: true });
 		}
 		function random(){
-			let animationList = ['fade','slide','moveToBack'];
+			let animationList = ['fade','slide'];
 			let index = Math.round((animationList.length - 1) * Math.random());
 			chooseAnimation(animationList[index]);
 		}
@@ -507,13 +442,9 @@ img[src=""],img:not([src]){
 	height: 100%;
 	object-fit: cover;
 	position: absolute;
-	transform: translate3d(0,0,0);
-	-webkit-backface-visibility: hidden;
-	backface-visibility: hidden;
 }
 
 .slide {
-	transform-style: preserve-3d;
 	.prev-image {
 		z-index: 2;
 	}
@@ -524,9 +455,6 @@ img[src=""],img:not([src]){
 	.current-image {
 		z-index: 0;
 	}
-}
-.background-layer {
-	perspective: 1000px;
 }
 #videoContainer{
 	width: 100%;
