@@ -25,7 +25,8 @@
 				"ui_showFPS" : "show FPS",
 				"ui_showWeather" : "show Weather",
 				"ui_slide" : "slide",
-				"ui_slideAnimation" : "slide",
+				"ui_slideLeftAnimation" : "slideLeft",
+				"ui_slideUpAnimation" : "slideUp",
 				"ui_static" : "static",
 				"ui_switchAnimation" : "switchAnimation",
 				"ui_video" : "video",
@@ -52,7 +53,8 @@
 				"ui_showFPS" : "显示FPS",
 				"ui_showWeather" : "显示天气",
 				"ui_slide" : "图片幻灯片",
-				"ui_slideAnimation" : "滑动",
+				"ui_slideLeftAnimation" : "向左滑动",
+				"ui_slideUpAnimation" : "上滑",
 				"ui_static" : "静态背景",
 				"ui_switchAnimation" : "切换动画效果",
 				"ui_video" : "视频",
@@ -222,8 +224,12 @@
 						"value" : "fade"
 					},
 					{
-						"label" : "ui_slideAnimation",
-						"value" : "slide"
+						"label" : "ui_slideLeftAnimation",
+						"value" : "slideLeft"
+					},
+					{
+						"label" : "ui_slideUpAnimation",
+						"value" : "slideUp"
 					},
 					{
 						"label" : "ui_zoomOutAnimation",
@@ -276,7 +282,7 @@
 	"tags" : [ "Music" ],
 	"title" : "幻境",
 	"type" : "Web",
-	"version" : 56,
+	"version" : 57,
 	"visibility" : "public",
 	"workshopid" : "3277017252",
 	"workshopurl" : "steam://url/CommunityFilePage/3277017252"

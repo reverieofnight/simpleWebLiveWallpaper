@@ -110,8 +110,8 @@ function fade(){
 	switchCleanup = onTransitionEnd;
 	preRef.value.addEventListener('transitionend', onTransitionEnd, { once: true });
 }
-/** 滑动切换：新图从右侧滑入、旧图向左滑出 */
-function slide(){
+/** 向左滑动切换：右图从右侧滑入、旧图向左滑出 */
+function slideLeft(){
 	prevSrc.value = preBackSrc;
 	nextSrc.value = nextBackSrc;
 	currentSrc.value = nextBackSrc;
@@ -127,6 +127,29 @@ function slide(){
 	preRef.value.style.transition = `transform ${DURATION}s ease`;
 	nextRef.value.style.transition = `transform ${DURATION}s ease`;
 	preRef.value.style.transform = 'translateX(-100%)';
+	nextRef.value.style.transform = '';
+
+	switchCleanup = onTransitionEnd;
+	preRef.value.addEventListener('transitionend', onTransitionEnd, { once: true });
+	nextRef.value.addEventListener('transitionend', onTransitionEnd, { once: true });
+}
+/** 向上滑动切换：新图从下方滑入、旧图向上滑出 */
+function slideUp(){
+	prevSrc.value = preBackSrc;
+	nextSrc.value = nextBackSrc;
+	currentSrc.value = nextBackSrc;
+
+	preRef.value.style.transition = 'none';
+	nextRef.value.style.transition = 'none';
+	preRef.value.style.opacity = '1';
+	nextRef.value.style.opacity = '1';
+	preRef.value.style.transform = '';
+	nextRef.value.style.transform = 'translateY(100%)';
+	void preRef.value.offsetHeight;
+
+	preRef.value.style.transition = `transform ${DURATION}s ease`;
+	nextRef.value.style.transition = `transform ${DURATION}s ease`;
+	preRef.value.style.transform = 'translateY(-100%)';
 	nextRef.value.style.transform = '';
 
 	switchCleanup = onTransitionEnd;
@@ -181,7 +204,7 @@ function focus(){
 }
 /** 随机选择一种动画效果执行 */
 function random(){
-	let animationList = ['fade','slide','zoomOut','focus'];
+	let animationList = ['fade','slideLeft','slideUp','zoomOut','focus'];
 	let index = Math.round((animationList.length - 1) * Math.random());
 	chooseAnimation(animationList[index]);
 }
@@ -191,8 +214,11 @@ function chooseAnimation(value){
 		case 'fade':
 			fade();
 			break;
-		case 'slide':
-			slide();
+		case 'slideLeft':
+			slideLeft();
+			break;
+		case 'slideUp':
+			slideUp();
 			break;
 		case 'zoomOut':
 			zoomOut();
