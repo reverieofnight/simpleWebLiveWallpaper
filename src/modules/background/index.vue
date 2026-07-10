@@ -86,6 +86,7 @@ function onTransitionEnd() {
 	nextRef.value.style.transform = '';
 	preRef.value.style.filter = '';
 	nextRef.value.style.filter = '';
+	nextRef.value.style.clipPath = '';
 	preRef.value.style.opacity = '0';
 	nextRef.value.style.opacity = '0';
 	nextRef.value.style.zIndex = '';
@@ -180,6 +181,29 @@ function cover(){
 	switchCleanup = onTransitionEnd;
 	nextRef.value.addEventListener('transitionend', onTransitionEnd, { once: true });
 }
+/** 圆形展开：新图从中心圆形扩散展开，覆盖旧图 */
+function wipe(){
+	prevSrc.value = preBackSrc;
+	nextSrc.value = nextBackSrc;
+	currentSrc.value = nextBackSrc;
+
+	nextRef.value.style.transition = 'none';
+	nextRef.value.style.transform = '';
+	nextRef.value.style.opacity = '1';
+	nextRef.value.style.clipPath = 'circle(0% at 50% 50%)';
+	preRef.value.style.transition = 'none';
+	preRef.value.style.transform = '';
+	preRef.value.style.opacity = '1';
+	void nextRef.value.offsetHeight;
+
+	// 新图在旧图上方圆形展开
+	nextRef.value.style.zIndex = '3';
+	nextRef.value.style.transition = `clip-path ${DURATION}s ease`;
+	nextRef.value.style.clipPath = 'circle(100% at 50% 50%)';
+
+	switchCleanup = onTransitionEnd;
+	nextRef.value.addEventListener('transitionend', onTransitionEnd, { once: true });
+}
 /** 缩放淡出：旧图放大并淡出，新图直接显示 */
 function zoomOut(){
 	prevSrc.value = preBackSrc;
@@ -228,7 +252,7 @@ function focus(){
 }
 /** 随机选择一种动画效果执行 */
 function random(){
-	let animationList = ['fade','slideLeft','slideUp','zoomOut','focus','cover'];
+	let animationList = ['fade','slideLeft','slideUp','zoomOut','focus','cover','wipe'];
 	let index = Math.round((animationList.length - 1) * Math.random());
 	chooseAnimation(animationList[index]);
 }
@@ -252,6 +276,9 @@ function chooseAnimation(value){
 			break;
 		case 'cover':
 			cover();
+			break;
+		case 'wipe':
+			wipe();
 			break;
 		case 'random':
 			random();
@@ -278,6 +305,7 @@ function handler() {
 	nextRef.value.style.transform = '';
 	preRef.value.style.filter = '';
 	nextRef.value.style.filter = '';
+	nextRef.value.style.clipPath = '';
 	nextRef.value.style.zIndex = '';
 	preRef.value.style.opacity = '0';
 	nextRef.value.style.opacity = '0';
